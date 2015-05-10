@@ -56,11 +56,14 @@ public class ZillowParser {
 				
 			}
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new Exception("Exception Occured in Zillow Parser. File Not Found");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new Exception("Exception Occured in Zillow Parser. IO Exception");
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception("Exception Occured in Zillow Parser");
 		}
 		
 	}
