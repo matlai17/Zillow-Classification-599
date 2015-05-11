@@ -4,13 +4,15 @@ import Classifiers.*;
 import Classifiers.Classifier;
 import Parser.ZillowParser;
 import Resources.House;
-import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 
 /**
  * The main Controller class that will initialize and train the different classification
@@ -37,9 +39,9 @@ public class Controller {
     public Controller(ZillowParser p)
     {
 //        houses = Parser.parse(f);
-        ANN = new ANN();
-        NB = new NaiveBayes();
-        RF = new RandomForest();
+        ANN = new ANN(Classifier.MEDIUM_RANGES, Classifier.EVEN_DISTRIBUTION);
+        NB = new NaiveBayes(Classifier.MEDIUM_RANGES, Classifier.EVEN_DISTRIBUTION);
+        RF = new RandomForest(Classifier.MEDIUM_RANGES, Classifier.EVEN_DISTRIBUTION);
         
         ExecutorService e = Executors.newFixedThreadPool(3);
         
@@ -52,8 +54,34 @@ public class Controller {
         try { e.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS); }
         catch (InterruptedException ex) { }
     }
-    
-//    public static void main(String[] args) {
+    public static void main(String[] args) {
+        
+//        List<House> test = new ArrayList<>();
+//        Random r = new Random();
+//        for (int i = 0; i < 10000000; i++) {
+//            House h = new House();
+//            h.put("price", (double)(r.nextInt(100)+ r.nextDouble()));
+//            test.add(h);
+//        }
+//        
+//        DoubleProperty lowerPriceRange = new SimpleDoubleProperty(Long.MAX_VALUE);
+//        DoubleProperty upperPriceRange = new SimpleDoubleProperty(Long.MIN_VALUE);
+        
+        // Retrieve lower/uper price ranges
+//        test.stream().map(h -> h.get("price")).filter(d -> (lowerPriceRange.get() > d)).forEach(d -> lowerPriceRange.set(d));
+//        test.stream().map(h -> h.get("price")).filter(d -> (upperPriceRange.get() > d)).forEach(d -> upperPriceRange.set(d));
+        
+//        test.stream().map(h -> h.get("price")).map((d) -> {
+//            if(lowerPriceRange.get() > d) lowerPriceRange.set(d);
+//            if(upperPriceRange.get() < d) upperPriceRange.set(d);
+//            return d;
+//        });
+//        
+//        System.out.println(lowerPriceRange.get());
+//        System.out.println(upperPriceRange.get());
+//             if(d > upperPriceRange) upperPriceRange = d;
+//             if(d < lowerPriceRange) lowerPriceRange = d;});
+        
 //        
 //        ArrayList<java.util.Map<String, Integer>> test = new ArrayList<>();
 //        
@@ -81,6 +109,6 @@ public class Controller {
 //            if(i > 8) System.out.println(i);
 //            if(i <= 8) System.out.println(i);
 //        });
-//    }
+    }
     
 }
