@@ -4,6 +4,8 @@ package Classifiers;
 import Resources.House;
 import java.util.List;
 import java.util.TreeSet;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 
 /**
  *
@@ -11,7 +13,7 @@ import java.util.TreeSet;
  */
 public abstract class Classifier {
     
-    private final int MAX_HOUSE_PRICE = 200000000;
+    private static final int MAX_HOUSE_PRICE = 500000000;
     
     /**
      * This option will return price ranges that are $10,000 in range.
@@ -38,12 +40,11 @@ public abstract class Classifier {
      */
     public static final int FIXED_DISTRIBUTION = 200;
     
-    private TreeSet<Double> priceRange;
+    private double[] priceRange;
     
-    public Classifier()
+    public Classifier(int range, int distribution)
     {
-        priceRange = new TreeSet<>();
-        priceRange.stream().filter(t -> t > 0);
+        generatePriceRanges(null, range, range);
     }
     
     /**
@@ -72,21 +73,29 @@ public abstract class Classifier {
     public abstract String getClassifierName();
     
     /**
-     * Generates the price buckets that the 
+     * Generates the price ranges that the classification algorithm will classify
+     * the houses into based on the set distribution types.
+     * 
      * @param houses
      * @param bucketSize
      * @param distributionType
      * @return 
      */
-    private double[] generatePriceRanges(List<House> houses, int distributionType)
+    private double[] generatePriceRanges(List<House> houses, int rangeSize, int rangeType)
     {
-        double lowerPriceRange = Long.MAX_VALUE;
-        double upperPriceRange = Long.MIN_VALUE; 
+//        DoubleProperty lowerPriceRange = new SimpleDoubleProperty(Long.MAX_VALUE);
+//        DoubleProperty upperPriceRange = new SimpleDoubleProperty(Long.MAX_VALUE);
         
         // Retrieve lower/uper price ranges
-//         houses.stream().map(m -> m.getFeature("price")).forEach(d -> {
-//             if(d > upperPriceRange) upperPriceRange = d;
-//             if(d < lowerPriceRange) lowerPriceRange = d;});
+//         houses.stream().map(h -> h.get("price")).map(d -> {
+//             if(d > upperPriceRange.get()) upperPriceRange.set(d);
+//             if(d < lowerPriceRange.get()) lowerPriceRange.set(d);
+//             return d;
+//         });
+        
+        int small = 10000;
+        int medium = 100000;
+        int large = 400000;
         
         return null;
     }
