@@ -12,8 +12,8 @@ public class RandomForest extends Classifier {
 
     private final String CLASSIFIER_NAME = "Random Forest";
 
-    public RandomForest(int range, int distribution) {
-        super(range, distribution);
+    public RandomForest(int distribution) {
+        super(distribution);
     }
 
     @Override

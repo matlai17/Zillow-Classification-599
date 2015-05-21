@@ -2,10 +2,19 @@
 package Classifiers;
 
 import Resources.House;
+import Resources.HouseCategoryMismatchException;
+import com.sun.javafx.scene.control.skin.VirtualFlow;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 
 /**
  *
@@ -13,38 +22,50 @@ import javafx.beans.property.SimpleDoubleProperty;
  */
 public abstract class Classifier {
     
-    private static final int MAX_HOUSE_PRICE = 500000000;
-    
-    /**
-     * This option will return price ranges that are $10,000 in range.
-     */
-    public static final int SMALL_RANGES = 10;
-    /**
-     * This option will return price ranges that are $100,000 in range.
-     */
-    public static final int MEDIUM_RANGES = 20;
-    /**
-     * This option will return price ranges that are $400,000 in range.
-     */
-    public static final int LARGE_RANGES = 30;
-    
-    /**
-     * This option will return variable price ranges that will distribute the
-     * houses into an even and flat distribution such that the more popular price
-     * ranges will be smaller
-     */
-    public static final int EVEN_DISTRIBUTION = 100;
-    /**
-     * This option will return fixed price ranges that will created a fixed
-     * distribution of houses
-     */
-    public static final int FIXED_DISTRIBUTION = 200;
+    private static final int MAX_HOUSE_PRICE = 10000000;
     
     private double[] priceRange;
     
-    public Classifier(int range, int distribution)
+    public Classifier(List<House> houses, int numberOfCategories, boolean evenDistribution)
     {
-        generatePriceRanges(null, range, range);
+        priceRange = generatePriceRanges(houses, numberOfCategories, evenDistribution);
+    }
+    
+    public Classifier(int numberOfCategories, boolean evenDistribution)
+    {
+        this((List<House>)null, numberOfCategories, evenDistribution);
+    }
+    
+    public Classifier(House[] houses, int numberOfCategories, boolean evenDistribution)
+    {
+        this(Arrays.asList(houses),numberOfCategories,evenDistribution);
+    }
+    
+    public Classifier(int numberOfCategories)
+    {
+        this((List<House>) null, numberOfCategories, false);
+    }
+    
+    /**
+     * Determines the category of a price given the specified classifier configuration:
+     * how many categories there are and how the categories were formed.
+     * 
+     * @param price The price for which the category will be determined.
+     * @return The category for the price
+     */
+    private int determineCategory(double price)
+    {
+        if(price > priceRange[priceRange.length - 1]) return priceRange.length - 1;
+        int imin = 0, imax = priceRange.length - 1;
+        while(imax - imin != 1)
+        {
+            // floored
+            int imid = (imax+imin)/2;
+            if(price == priceRange[imid]) return imid;
+            if(price > priceRange[imid]) imin = imid;
+            if(price < priceRange[imid]) imax = imid;
+        }
+        return imin;
     }
     
     /**
@@ -74,30 +95,103 @@ public abstract class Classifier {
     
     /**
      * Generates the price ranges that the classification algorithm will classify
-     * the houses into based on the set distribution types.
+     * the houses into based on the set distribution types. The price range returned is represented by a list of double
+     * where each value in the list represents the inclusive start bound to a range until the next value which is the 
+     * non-inclusive end bound to the range. Calling this function is identical to calling
+     * generatePriceRanges(null, numberOfCategories, false);
      * 
-     * @param houses
-     * @param bucketSize
-     * @param distributionType
+     * @param numberOfCategories  Number of "buckets" or categories that will be created. 150-500 for average. More for finer buckets
      * @return 
      */
-    private double[] generatePriceRanges(List<House> houses, int rangeSize, int rangeType)
+    private static double [] generatePriceRanges(int numberOfCategories)
     {
-//        DoubleProperty lowerPriceRange = new SimpleDoubleProperty(Long.MAX_VALUE);
-//        DoubleProperty upperPriceRange = new SimpleDoubleProperty(Long.MAX_VALUE);
+        return generatePriceRanges(null, numberOfCategories, false);
+    }
+    
+    /**
+     * Generates the price ranges that the classification algorithm will classify
+     * the houses into based on the set distribution types. The price range returned is represented by a list of double
+     * where each value in the list represents the inclusive start bound to a range until the next value which is the 
+     * non-inclusive end bound to the range.
+     * 
+     * @param houses  List of houses that will be used when generating even distribution categories
+     * @param numberOfCategories  Number of "buckets" or categories that will be created. 150-500 for average. More for finer buckets
+     * @param evenDistribution  If the category price distribution should be dynamically generated according to the given house data.
+     * @return A list of double where each value represents a price range
+     */
+    private static double[] generatePriceRanges(List<House> houses, int numberOfCategories, boolean evenDistribution)
+    {
+        double pricePointsPerCategory = (double)MAX_HOUSE_PRICE/(double)numberOfCategories;
+            
+        double[] categories = new double[numberOfCategories];
+        double pricePoint = 0;
+
+        if(!evenDistribution)
+        {
+            for (int i = 0; i < categories.length; i++) 
+            {
+                categories[i] = Math.round(pricePoint);
+                pricePoint += pricePointsPerCategory;
+            }
+
+            return categories;
+        }
         
-        // Retrieve lower/uper price ranges
-//         houses.stream().map(h -> h.get("price")).map(d -> {
-//             if(d > upperPriceRange.get()) upperPriceRange.set(d);
-//             if(d < lowerPriceRange.get()) lowerPriceRange.set(d);
-//             return d;
-//         });
+        if(houses == null) 
+            try { throw new HouseCategoryMismatchException("You cannot create categories of an even distribution without providing a list of houses. Please try a different price categorization configuration."); } 
+            catch (HouseCategoryMismatchException ex) { Logger.getLogger(Classifier.class.getName()).log(Level.SEVERE, null, ex); }
+
+        Double[] sortedUniquePrices = houses.stream().map(h -> h.getSoldPrice()).distinct().sorted().toArray(Double[] :: new);
+
+        pricePointsPerCategory = (double)(sortedUniquePrices.length - 1)/(double)numberOfCategories;
         
-        int small = 10000;
-        int medium = 100000;
-        int large = 400000;
+        if(numberOfCategories > sortedUniquePrices.length)
+            try {  throw new HouseCategoryMismatchException("There cannot be more categories than unique house prices when performing an even distribution. Please decrease the number of categories to be generated."); } 
+            catch (HouseCategoryMismatchException ex) { Logger.getLogger(Classifier.class.getName()).log(Level.SEVERE, null, ex); } 
         
-        return null;
+        double index = (double)pricePointsPerCategory;
+        for (int i = 1; i < categories.length; i++) {
+//            System.out.println(index);
+            categories[i] = sortedUniquePrices[(int)Math.round(index)];
+            index += pricePointsPerCategory;
+        }
+
+        return categories;
+    }
+    
+    public static int determineCategory(double[] categories, double price)
+    {
+        if(price > categories[categories.length - 1]) return categories.length - 1;
+        int imin = 0, imax = categories.length - 1;
+        while(imax - imin != 1)
+        {
+            // floored
+            int imid = (imax+imin)/2;
+            if(price == categories[imid]) return imid;
+            if(price > categories[imid]) imin = imid;
+            if(price < categories[imid]) imax = imid;
+        }
+        return imin;
+    }
+    
+    public static void main(String[] args) {
+        List<House> test = new ArrayList<>();
+        Random r = new Random();
+        for(int i = 0; i < 100; i++)
+        {
+            House h = new House();
+//            h.setSoldPrice((r.nextGaussian()+2)*r.nextInt(1000));
+            h.setSoldPrice(i);
+            test.add(h);
+        }
+        double []output = generatePriceRanges(test, 18, true);
+//        for(double o : output) System.out.println(o);
+        for (int i = 0; i < output.length; i++) {
+            System.out.println(i + " - " + output[i]);
+        }
+        double testNum = 33;
+        System.out.println("\n-----------\n" + determineCategory(output, testNum) +  " - " + testNum);
+        
     }
     
 }

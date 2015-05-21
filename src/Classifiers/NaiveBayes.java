@@ -12,8 +12,8 @@ public class NaiveBayes extends Classifier {
 
     private final String CLASSIFIER_NAME = "Naive Bayes";
 
-    public NaiveBayes(int range, int distribution) {
-        super(range, distribution);
+    public NaiveBayes(int distribution) {
+        super(distribution);
     }
     
     @Override

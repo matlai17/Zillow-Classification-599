@@ -19,7 +19,7 @@ import Resources.HouseAddress;
  */
 public class ZillowParser {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		
 		String csvFile = "data\\ZillowDataTrain.csv";
 		String line = null;

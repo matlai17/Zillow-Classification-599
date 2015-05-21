@@ -39,9 +39,9 @@ public class Controller {
     public Controller(ZillowParser p)
     {
 //        houses = Parser.parse(f);
-        ANN = new ANN(Classifier.MEDIUM_RANGES, Classifier.EVEN_DISTRIBUTION);
-        NB = new NaiveBayes(Classifier.MEDIUM_RANGES, Classifier.EVEN_DISTRIBUTION);
-        RF = new RandomForest(Classifier.MEDIUM_RANGES, Classifier.EVEN_DISTRIBUTION);
+        ANN = new ANN(0);
+        NB = new NaiveBayes(0);
+        RF = new RandomForest(0);
         
         ExecutorService e = Executors.newFixedThreadPool(3);
         

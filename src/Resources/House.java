@@ -80,4 +80,9 @@ public class House {
 	public void setZestimate(double zestimate) {
 		this.zestimate = zestimate;
 	}      
+        
+        // Temporary variable and method for my own use in other methods. Feel free to remove if you have a replacement. I will fix my code later.
+        double priceSold;
+        public double getSoldPrice(){ return priceSold; }
+        public void setSoldPrice(double p){ priceSold = p; }
 }
