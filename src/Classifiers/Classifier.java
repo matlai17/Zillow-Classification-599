@@ -3,18 +3,10 @@ package Classifiers;
 
 import Resources.House;
 import Resources.HouseCategoryMismatchException;
-import com.sun.javafx.scene.control.skin.VirtualFlow;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
-import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 
 /**
  *
@@ -85,6 +77,14 @@ public abstract class Classifier {
         return priceReturn;
     }
     
+    private String printablePriceRange(int category)
+    {
+        double[] priceBounds = determinePriceRange(category);
+        if(priceBounds.length == 1)
+            return "$" + priceBounds[0] + " - ";
+        return "$" + priceBounds[0] + " - $" + priceBounds[1];
+    }
+    
     /**
      * This function trains the classifier using a House object. How the Classifier
      * is trained is dependent on the Classifier used and algorithm that is selected.
@@ -150,7 +150,6 @@ public abstract class Classifier {
                 categories[i] = Math.round(pricePoint);
                 pricePoint += pricePointsPerCategory;
             }
-
             return categories;
         }
         
@@ -159,7 +158,6 @@ public abstract class Classifier {
             catch (HouseCategoryMismatchException ex) { Logger.getLogger(Classifier.class.getName()).log(Level.SEVERE, null, ex); }
 
         Double[] sortedUniquePrices = houses.stream().map(h -> h.getSoldPrice()).distinct().sorted().toArray(Double[] :: new);
-
         pricePointsPerCategory = (double)(sortedUniquePrices.length - 1)/(double)numberOfCategories;
         
         if(numberOfCategories > sortedUniquePrices.length)
@@ -168,47 +166,44 @@ public abstract class Classifier {
         
         double index = (double)pricePointsPerCategory;
         for (int i = 1; i < categories.length; i++) {
-//            System.out.println(index);
             categories[i] = sortedUniquePrices[(int)Math.round(index)];
             index += pricePointsPerCategory;
         }
 
         return categories;
     }
-    
-    public static int determineCategory(double[] categories, double price)
-    {
-        if(price > categories[categories.length - 1]) return categories.length - 1;
-        int imin = 0, imax = categories.length - 1;
-        while(imax - imin != 1)
-        {
-            // floored
-            int imid = (imax+imin)/2;
-            if(price == categories[imid]) return imid;
-            if(price > categories[imid]) imin = imid;
-            if(price < categories[imid]) imax = imid;
-        }
-        return imin;
-    }
-    
-    public static void main(String[] args) {
-        List<House> test = new ArrayList<>();
-        Random r = new Random();
-        for(int i = 0; i < 100; i++)
-        {
-            House h = new House();
-//            h.setSoldPrice((r.nextGaussian()+2)*r.nextInt(1000));
-            h.setSoldPrice(i);
-            test.add(h);
-        }
-        double []output = generatePriceRanges(test, 18, true);
-//        for(double o : output) System.out.println(o);
-        for (int i = 0; i < output.length; i++) {
-            System.out.println(i + " - " + output[i]);
-        }
-        double testNum = 33;
-        System.out.println("\n-----------\n" + determineCategory(output, testNum) +  " - " + testNum);
-        
-    }
-    
 }
+
+//    public static int determineCategory(double[] categories, double price)
+//    {
+//        if(price > categories[categories.length - 1]) return categories.length - 1;
+//        int imin = 0, imax = categories.length - 1;
+//        while(imax - imin != 1)
+//        {
+//            // floored
+//            int imid = (imax+imin)/2;
+//            if(price == categories[imid]) return imid;
+//            if(price > categories[imid]) imin = imid;
+//            if(price < categories[imid]) imax = imid;
+//        }
+//        return imin;
+//    }
+//    
+//    public static void main(String[] args) {
+//        List<House> test = new ArrayList<>();
+//        Random r = new Random();
+//        for(int i = 0; i < 100; i++)
+//        {
+//            House h = new House();
+////            h.setSoldPrice((r.nextGaussian()+2)*r.nextInt(1000));
+//            h.setSoldPrice(i);
+//            test.add(h);
+//        }
+//        double []output = generatePriceRanges(test, 18, true);
+////        for(double o : output) System.out.println(o);
+//        for (int i = 0; i < output.length; i++) {
+//            System.out.println(i + " - " + output[i]);
+//        }
+//        double testNum = 33;
+//        System.out.println("\n-----------\n" + determineCategory(output, testNum) +  " - " + testNum);
+//    }
