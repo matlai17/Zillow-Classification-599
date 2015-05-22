@@ -15,6 +15,11 @@ public class ANN extends Classifier {
     public ANN(int distribution) {
         super(distribution);
     }
+    
+    public ANN(double[] categories)
+    {
+        super(categories);
+    }
 
     @Override
     public void train(House h) {

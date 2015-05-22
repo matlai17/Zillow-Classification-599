@@ -38,6 +38,11 @@ public abstract class Classifier {
         this((List<House>) null, numberOfCategories, false);
     }
     
+    public Classifier(double[] categories)
+    {
+        priceRange = categories;
+    }
+    
     /**
      * Determines the category of a price given the specified classifier configuration:
      * how many categories there are and how the categories were formed.
@@ -120,7 +125,7 @@ public abstract class Classifier {
      * @param numberOfCategories  Number of "buckets" or categories that will be created. 150-500 for average. More for finer buckets
      * @return 
      */
-    private static double [] generatePriceRanges(int numberOfCategories)
+    public static double [] generatePriceRanges(int numberOfCategories)
     {
         return generatePriceRanges(null, numberOfCategories, false);
     }
@@ -136,7 +141,7 @@ public abstract class Classifier {
      * @param evenDistribution  If the category price distribution should be dynamically generated according to the given house data.
      * @return A list of double where each value represents a price range
      */
-    private static double[] generatePriceRanges(List<House> houses, int numberOfCategories, boolean evenDistribution)
+    public static double[] generatePriceRanges(List<House> houses, int numberOfCategories, boolean evenDistribution)
     {
         double pricePointsPerCategory = (double)MAX_HOUSE_PRICE/(double)numberOfCategories;
             

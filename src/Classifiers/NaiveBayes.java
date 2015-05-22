@@ -17,6 +17,11 @@ public class NaiveBayes extends Classifier {
         super(numberOfCategories);
     }
     
+    public NaiveBayes(double[] categories)
+    {
+        super(categories);
+    }
+    
     public NaiveBayes(List<House> houses, int numberOfCategories, boolean evenDistribution)
     {
         super(houses, numberOfCategories, evenDistribution);

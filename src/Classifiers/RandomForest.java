@@ -16,6 +16,10 @@ public class RandomForest extends Classifier {
         super(distribution);
     }
 
+    public RandomForest(double[] categories) {
+        super(categories);
+    }
+
     @Override
     public void train(House h) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
