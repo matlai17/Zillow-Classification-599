@@ -69,6 +69,23 @@ public abstract class Classifier {
     }
     
     /**
+     * determinePriceRange returns a double array containing one or two numbers, each representing a bound of the price
+     * range that the category represents. If the category is bounded by only one number or, in other words, the price of
+     * the house is within the final category that represents any number greater than the final bound, then the function
+     * will only return an array of one element.
+     * 
+     * @param category The category number whose bounds is to be returned
+     * @return An array containing one or two numbers representing the price bounds of the category
+     */
+    private double[] determinePriceRange(int category)
+    {
+        double [] priceReturn;
+        if(category < priceRange.length) priceReturn = new double[]{ priceRange[category], priceRange[category+1] - 1 };
+        else priceReturn = new double[]{ priceRange[category] };
+        return priceReturn;
+    }
+    
+    /**
      * This function trains the classifier using a House object. How the Classifier
      * is trained is dependent on the Classifier used and algorithm that is selected.
      * 
