@@ -2,6 +2,7 @@
 package Classifiers;
 
 import Resources.House;
+import java.util.List;
 
 /**
  * An implementation of the Naive-Bayes classification algorithm
@@ -12,8 +13,13 @@ public class NaiveBayes extends Classifier {
 
     private final String CLASSIFIER_NAME = "Naive Bayes";
 
-    public NaiveBayes(int distribution) {
-        super(distribution);
+    public NaiveBayes(int numberOfCategories) {
+        super(numberOfCategories);
+    }
+    
+    public NaiveBayes(List<House> houses, int numberOfCategories, boolean evenDistribution)
+    {
+        super(houses, numberOfCategories, evenDistribution);
     }
     
     @Override
