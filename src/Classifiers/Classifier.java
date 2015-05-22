@@ -45,7 +45,7 @@ public abstract class Classifier {
      * @param price The price for which the category will be determined.
      * @return The category for the price
      */
-    private int determineCategory(double price)
+    protected int determineCategory(double price)
     {
         if(price > priceRange[priceRange.length - 1]) return priceRange.length - 1;
         int imin = 0, imax = priceRange.length - 1;
@@ -69,7 +69,7 @@ public abstract class Classifier {
      * @param category The category number whose bounds is to be returned
      * @return An array containing one or two numbers representing the price bounds of the category
      */
-    private double[] determinePriceRange(int category)
+    protected double[] determinePriceRange(int category)
     {
         double [] priceReturn;
         if(category < priceRange.length) priceReturn = new double[]{ priceRange[category], priceRange[category+1] - 1 };
@@ -77,7 +77,7 @@ public abstract class Classifier {
         return priceReturn;
     }
     
-    private String printablePriceRange(int category)
+    protected String printablePriceRange(int category)
     {
         double[] priceBounds = determinePriceRange(category);
         if(priceBounds.length == 1)
