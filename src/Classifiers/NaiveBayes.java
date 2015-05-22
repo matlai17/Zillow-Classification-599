@@ -3,6 +3,7 @@ package Classifiers;
 
 import Resources.House;
 import java.util.List;
+import java.util.TreeMap;
 
 /**
  * An implementation of the Naive-Bayes classification algorithm
@@ -12,6 +13,12 @@ import java.util.List;
 public class NaiveBayes extends Classifier {
 
     private final String CLASSIFIER_NAME = "Naive Bayes";
+    
+    // Frequency of each feature
+    private TreeMap<String, Integer> featureFrequency;
+    
+    // Data structure containing different counts for each category
+//    private ArrayList
 
     public NaiveBayes(int numberOfCategories) {
         super(numberOfCategories);

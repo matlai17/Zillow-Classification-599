@@ -23,7 +23,7 @@ package Resources;
 public class HouseCategoryMismatchException extends Exception {
     
     public HouseCategoryMismatchException () {
-        super();
+        super("There was an exception in creating the house price-bound categories.");
     }
     
     public HouseCategoryMismatchException (String message) {
