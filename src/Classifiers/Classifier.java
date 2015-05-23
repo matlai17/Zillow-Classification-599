@@ -17,11 +17,14 @@ public abstract class Classifier {
 	private static final int MAX_HOUSE_PRICE = 10000000;
 
 	private double[] priceRange;
+        
+        private int numberOfCategories;
 
 	public Classifier(List<House> houses, int numberOfCategories,
 			boolean evenDistribution) {
 		priceRange = generatePriceRanges(houses, numberOfCategories,
 				evenDistribution);
+                this.numberOfCategories = numberOfCategories;
 	}
 
 	public Classifier(int numberOfCategories, boolean evenDistribution) {
@@ -39,7 +42,13 @@ public abstract class Classifier {
 
 	public Classifier(double[] categories) {
 		priceRange = categories;
+                numberOfCategories = priceRange.length;
 	}
+        
+        public int getNumberOfCategories()
+        {
+            return numberOfCategories;
+        }
 
 	/**
 	 * Determines the category of a price given the specified classifier
