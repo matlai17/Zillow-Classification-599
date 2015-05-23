@@ -18,7 +18,7 @@ public abstract class Classifier {
 
 	private double[] priceRange;
         
-        private int numberOfCategories;
+        protected int numberOfCategories;
 
 	public Classifier(List<House> houses, int numberOfCategories,
 			boolean evenDistribution) {
