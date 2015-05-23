@@ -20,7 +20,7 @@ public class ZillowParser {
 
 	public static void main(String[] args) throws Exception {
 
-		String csvFile = "src\\data\\ZillowDataTrain.csv";
+		String csvFile = "data\\ZillowDataTrain.csv";
 		String line = null;
 		String csvDelimiter = ",";
 		Map<String, House> houseMap = new HashMap<String, House>();
