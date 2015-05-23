@@ -2,10 +2,26 @@ package Resources;
 
 public class HouseAddress {
 
-	private String streetAddress = null;
-	private String city = null;
-	private String state = null;
-	private String zip = null;
+	private String streetAddress;
+	private String city;
+	private String state;
+	private String zip;
+        
+        public HouseAddress()
+        {
+            streetAddress = null;
+            city = null;
+            state = null;
+            zip = null;
+        }
+        
+        public HouseAddress(String streetAddress, String city, String state, String zip)
+        {
+            this.streetAddress = streetAddress;
+            this.city = city;
+            this.state = state;
+            this.zip = zip;
+        }
 
 	public String getstreetAddress() {
 		return streetAddress;
