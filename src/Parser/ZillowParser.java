@@ -1,4 +1,3 @@
-
 package Parser;
 
 import java.io.BufferedReader;
@@ -20,51 +19,52 @@ import Resources.HouseAddress;
 public class ZillowParser {
 
 	public static void main(String[] args) throws Exception {
-		
+
 		String csvFile = "data\\ZillowDataTrain.csv";
 		String line = null;
 		String csvDelimiter = ",";
 		Map<String, House> houseMap = new HashMap<String, House>();
 		List<House> houseList = new ArrayList<House>();
 		try {
-			BufferedReader br = new  BufferedReader(new FileReader(csvFile));
-			
+			BufferedReader br = new BufferedReader(new FileReader(csvFile));
+
 			while ((line = br.readLine()) != null) {
 				String[] houseElements = line.split(csvDelimiter);
-//No Of Bedroom	No bathroom	Area	Year Built	Lot Size	PricePerSQFT	parkingSpace	noOfStories	Zestimate
-
+				// Below is the order for features in ZillowDataTrain
+				// ZId,StreetAddress,City,State,ZipCode,SoldPrice,Bedroom,Bathroom,Area,Age,Zestimate,SchoolElem,SchoolMiddle,SchoolHigh
 				House house = new House();
 				HouseAddress address = new HouseAddress();
-				address.setStreetNumber(Integer.parseInt(houseElements[0]));
-				address.setStreetName(houseElements[1]);
+				house.setZid(Long.parseLong(houseElements[0]));
+				address.setstreetAddress(houseElements[1]);
 				address.setCity(houseElements[2]);
 				address.setState(houseElements[3]);
 				address.setZip(houseElements[4]);
-				
-				house.setNoOfBedroom(Integer.parseInt(houseElements[5]));
-				house.setNoOfBathroom(Integer.parseInt(houseElements[6]));
-				house.setArea(Double.parseDouble(houseElements[7]));
-				house.setBuiltYear(Integer.parseInt(houseElements[8]));
-				house.setLotSize(Integer.parseInt(houseElements[9]));
-				house.setPricePerSQFT(Double.parseDouble(houseElements[10]));
-				house.setParkingSpace(Integer.parseInt(houseElements[11]));
-				house.setNoOfStories(Integer.parseInt(houseElements[12]));
-				house.setZestimate(Double.parseDouble(houseElements[13]));
+				house.setPriceSold(Double.parseDouble(houseElements[5]));
+				house.setNoOfBedroom(Integer.parseInt(houseElements[6]));
+				house.setNoOfBathroom(Double.parseDouble(houseElements[7]));
+				house.setArea(Double.parseDouble(houseElements[8]));
+				house.setBuiltYear(Integer.parseInt(houseElements[9]));
+				house.setZestimate(Double.parseDouble(houseElements[10]));
+				house.setSchoolElem(Integer.parseInt(houseElements[11]));
+				house.setSchoolMid(Integer.parseInt(houseElements[12]));
+				house.setSchoolHigh(Integer.parseInt(houseElements[13]));
 				house.setHouseAddress(address);
-				
 				houseList.add(house);
-				
+
 			}
+
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-			throw new Exception("Exception Occured in Zillow Parser. File Not Found");
+			throw new Exception(
+					"Exception Occured in Zillow Parser. File Not Found");
 		} catch (IOException e) {
 			e.printStackTrace();
-			throw new Exception("Exception Occured in Zillow Parser. IO Exception");
+			throw new Exception(
+					"Exception Occured in Zillow Parser. IO Exception");
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new Exception("Exception Occured in Zillow Parser");
 		}
-		
+
 	}
 }
