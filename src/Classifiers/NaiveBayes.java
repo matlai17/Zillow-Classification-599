@@ -26,7 +26,7 @@ public class NaiveBayes extends Classifier {
 
     private final String CLASSIFIER_NAME = "Naive Bayes";
     
-    // Frequency of each feature
+    // Frequency of each feature for the entire classifier
     private TreeMap<String, Integer> featureFrequency;
     
     // Data structure(s) containing different counts for each category
@@ -48,21 +48,24 @@ public class NaiveBayes extends Classifier {
         initializeVariables();
     }
     
+    public NaiveBayes(List<House> houses, int numberOfCategories, boolean evenDistribution)
+    {
+        super(houses, numberOfCategories, evenDistribution);
+        initializeVariables();
+    }
+    
     private void initializeVariables()
     {
         featureFrequency = new TreeMap<>();
         totalHouseCount = 0;
-        categories = new Category[getNumberOfCategories()];
-    }
-    
-    public NaiveBayes(List<House> houses, int numberOfCategories, boolean evenDistribution)
-    {
-        super(houses, numberOfCategories, evenDistribution);
+        categories = new Category[numberOfCategories];
+        for (int i = 0; i < categories.length; i++) categories[i] = new Category();
     }
     
     @Override
-    public void train(House h) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void train(House h) 
+    {
+        
     }
 
     @Override
