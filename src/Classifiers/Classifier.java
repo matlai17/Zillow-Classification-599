@@ -18,9 +18,12 @@ public abstract class Classifier {
     
     private double[] priceRange;
     
+    private int numberOfCategories;
+    
     public Classifier(List<House> houses, int numberOfCategories, boolean evenDistribution)
     {
         priceRange = generatePriceRanges(houses, numberOfCategories, evenDistribution);
+        this.numberOfCategories = numberOfCategories;
     }
     
     public Classifier(int numberOfCategories, boolean evenDistribution)
@@ -41,6 +44,7 @@ public abstract class Classifier {
     public Classifier(double[] categories)
     {
         priceRange = categories;
+        numberOfCategories = priceRange.length;
     }
     
     /**
@@ -88,6 +92,11 @@ public abstract class Classifier {
         if(priceBounds.length == 1)
             return "$" + priceBounds[0] + " - ";
         return "$" + priceBounds[0] + " - $" + priceBounds[1];
+    }
+    
+    public int getNumberOfCategories()
+    {
+        return numberOfCategories;
     }
     
     /**
