@@ -1,6 +1,5 @@
 package Parser;
 
-import Classifiers.Classifier;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -9,56 +8,65 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import Resources.House;
 import Resources.HouseAddress;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author Matthew Lai and Arun Singh
  */
 public class ZillowParser {
-    
-    public static List<House> parseZillowDataFile(java.io.File zillowFile)
-    {
-        String line = null;
-        String csvDelimiter = ",";
-        Map<String, House> houseMap = new HashMap<>();
-        List<House> houseList = new ArrayList<>();
-        
-        try {
-            
-            BufferedReader br = new BufferedReader(new FileReader(zillowFile));
-            while ((line = br.readLine()) != null) {
-                String[] houseElements = line.split(csvDelimiter);
-                // Below is the order for features in ZillowDataTrain
-                // ZId,StreetAddress,City,State,ZipCode,SoldPrice,Bedroom,Bathroom,Area,Age,Zestimate,SchoolElem,SchoolMiddle,SchoolHigh
-                House house = new House(
-                        Long.parseLong(houseElements[0]),           //zid
-                        houseElements[1],                           //street
-                        houseElements[2],                           //city
-                        houseElements[3],                           //state
-                        houseElements[4],                           //zip
-                        Double.parseDouble(houseElements[5]),       //price
-                        Integer.parseInt(houseElements[6]),         //bedrooms
-                        Double.parseDouble(houseElements[7]),       //bathrooms
-                        Double.parseDouble(houseElements[8]),       //area
-                        Integer.parseInt(houseElements[9]),         //age
-                        Double.parseDouble(houseElements[10]),      //zestimate
-                        Integer.parseInt(houseElements[11]),        //elementary
-                        Integer.parseInt(houseElements[12]),        //middle
-                        Integer.parseInt(houseElements[13]));       //high
-                houseList.add(house);
 
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(ZillowParser.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        return houseList;
-    }
+	private static List<House> houseList = null;
+
+	public static List<House> getHouseList() {
+		return houseList;
+	}
+
+	public static void setHouseList(List<House> houseList) {
+		ZillowParser.houseList = houseList;
+	}
+
+	public static List<House> parseZillowDataFile(java.io.File zillowFile) {
+		String line = null;
+		String csvDelimiter = ",";
+		Map<String, House> houseMap = new HashMap<>();
+		houseList = new ArrayList<>();
+
+		try {
+
+			BufferedReader br = new BufferedReader(new FileReader(zillowFile));
+			while ((line = br.readLine()) != null) {
+				String[] houseElements = line.split(csvDelimiter);
+				// Below is the order for features in ZillowDataTrain
+				// ZId,StreetAddress,City,State,ZipCode,SoldPrice,Bedroom,Bathroom,Area,Age,Zestimate,SchoolElem,SchoolMiddle,SchoolHigh
+				House house = new House(Long.parseLong(houseElements[0]), // zid
+						houseElements[1], // street
+						houseElements[2], // city
+						houseElements[3], // state
+						houseElements[4], // zip
+						Double.parseDouble(houseElements[5]), // price
+						Integer.parseInt(houseElements[6]), // bedrooms
+						Double.parseDouble(houseElements[7]), // bathrooms
+						Double.parseDouble(houseElements[8]), // area
+						Integer.parseInt(houseElements[9]), // age
+						Double.parseDouble(houseElements[10]), // zestimate
+						Integer.parseInt(houseElements[11]), // elementary
+						Integer.parseInt(houseElements[12]), // middle
+						Integer.parseInt(houseElements[13])); // high
+				houseList.add(house);
+
+			}
+		} catch (IOException ex) {
+			Logger.getLogger(ZillowParser.class.getName()).log(Level.SEVERE,
+					null, ex);
+		}
+
+		return houseList;
+	}
 
 	public static void main(String[] args) throws Exception {
 
