@@ -38,10 +38,10 @@ public class House {
             schoolHigh = 0;
         }
         
-        public House(long zid, String street, String city, String state, int zip, double priceSold, 
-                int bedrooms, int bathrooms, double area, int year, double zestimate, int elem, int mid, int high)
+        public House(long zid, String street, String city, String state, String zip, double priceSold, 
+                int bedrooms, double bathrooms, double area, int year, double zestimate, int elem, int mid, int high)
         {
-            this.houseAddress = new HouseAddress(street, city, state, ""+zip);
+            this.houseAddress = new HouseAddress(street, city, state, zip);
             this.zid = zid;
             this.noOfBedroom = bedrooms;
             this.noOfBathroom = bathrooms;
