@@ -12,7 +12,8 @@ public class ANN extends Classifier {
 
     private final String CLASSIFIER_NAME = "Artificial Neural Network";
 
-    public ANN(int distribution) {
+    public ANN(int distribution) 
+    {
         super(distribution);
     }
     

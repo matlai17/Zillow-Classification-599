@@ -10,6 +10,18 @@ import java.util.TreeMap;
  *
  * @author Matthew Lai and Arun Singh
  */
+class Category {
+    
+    public int housesInCategory;
+    public TreeMap<String, Integer> featureFrequency;
+    
+    public Category()
+    {
+        housesInCategory = 0;
+        featureFrequency = new TreeMap<>();
+    }
+}
+
 public class NaiveBayes extends Classifier {
 
     private final String CLASSIFIER_NAME = "Naive Bayes";
@@ -17,16 +29,30 @@ public class NaiveBayes extends Classifier {
     // Frequency of each feature
     private TreeMap<String, Integer> featureFrequency;
     
-    // Data structure containing different counts for each category
-//    private ArrayList
+    // Data structure(s) containing different counts for each category
+    //      - # of houses in each category
+    //      - Frequency of each feature within the category
+    Category[] categories;
+    
+    private int totalHouseCount;
 
-    public NaiveBayes(int numberOfCategories) {
+    public NaiveBayes(int numberOfCategories) 
+    {
         super(numberOfCategories);
+        initializeVariables();
     }
     
     public NaiveBayes(double[] categories)
     {
         super(categories);
+        initializeVariables();
+    }
+    
+    private void initializeVariables()
+    {
+        featureFrequency = new TreeMap<>();
+        totalHouseCount = 0;
+        categories = new Category[getNumberOfCategories()];
     }
     
     public NaiveBayes(List<House> houses, int numberOfCategories, boolean evenDistribution)
