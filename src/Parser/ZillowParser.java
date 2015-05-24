@@ -23,11 +23,9 @@ public class ZillowParser {
     
     public static List<House> parseZillowDataFile(java.io.File zillowFile)
     {
-        String line = null;
+        String line;
         String csvDelimiter = ",";
-        Map<String, House> houseMap = new HashMap<>();
         List<House> houseList = new ArrayList<>();
-        
         try {
             
             BufferedReader br = new BufferedReader(new FileReader(zillowFile));
