@@ -26,9 +26,9 @@ public class Controller {
     
     List<House> trainingHouses;
     List<House> testHouses;
-    Classifier ANN;
-    Classifier NB;
-    Classifier RF;
+    ANN ANN;
+    NaiveBayes NB;
+    RandomForest RF;
     
     /**
      * Constructor will initialize the classification objects and train them 
@@ -42,21 +42,12 @@ public class Controller {
         List<House> allHouses = ZillowParser.parseZillowDataFile(new java.io.File("data\\ZillowDataTrain.csv"));
         partitionHouses(allHouses);
         
-        double[] categories = Classifier.generatePriceRanges(allHouses, 3, true);
+        double[] categories = Classifier.generatePriceRanges(allHouses, 125, true);
         ANN = new ANN(categories);
         NB = new NaiveBayes(categories);
         RF = new RandomForest(categories);
         
         ExecutorService e = Executors.newFixedThreadPool(3);
-        trainingHouses = new ArrayList<>();
-//        for (int i = 0; i < 20; i++) {
-            
-            trainingHouses.add(allHouses.get(0));
-            trainingHouses.add(allHouses.get(1));
-            trainingHouses.add(allHouses.get(2));
-//            trainingHouses.add(allHouses.get(3));
-            
-//        }
 //        e.submit(new TrainingThread(trainingHouses, ANN));
         e.submit(new TrainingThread(trainingHouses, NB));
 //        e.submit(new TrainingThread(trainingHouses, RF));
@@ -66,14 +57,28 @@ public class Controller {
         try { e.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS); }
         catch (InterruptedException ex) { }
         
-//        for(House h : testHouses)
-//        {
-//        House h = testHouses.get(0);
-        House h = allHouses.get(1);
+//        NB.printCatDetails();
+        double averageCatDifference = 0;
+        int numberTrue = 0;
+        int maxDistance = 0;
+        for(House h : testHouses)
+        {
             double[] NBPrediction = NB.predict(h);
+            double avg = NBPrediction[0];
+            if(NBPrediction.length > 1) avg = (avg + NBPrediction[1])/2;
+            
+            int determinedCat = NB.determineCategory(avg);
+            int trueCat = NB.determineCategory(h.getPriceSold());
+            averageCatDifference += Math.abs(determinedCat-trueCat);
+            if(Math.abs(determinedCat-trueCat) > maxDistance) maxDistance = Math.abs(determinedCat-trueCat);
+            if(determinedCat == trueCat) numberTrue++;
+            
             System.out.print("Price Sold: " + h.getPriceSold() + "\t" + "Predicted: $" + NBPrediction[0] + " - ");
             if(NBPrediction.length > 1) System.out.println("$" + NBPrediction[1]);
-//        }
+        }
+        System.out.println("Average Difference in Category: " + averageCatDifference/testHouses.size());
+        System.out.println("Absolute Correctness: " + numberTrue + "/" + testHouses.size() + " = " + (double)numberTrue/(double)testHouses.size());
+        System.out.println("Maximum Difference in Category: " + maxDistance);
         
     }
     
