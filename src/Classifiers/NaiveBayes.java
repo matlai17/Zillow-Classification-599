@@ -66,40 +66,60 @@ public class NaiveBayes extends Classifier {
     // Train data. Each feature should be divided by successive numbers 10^N for N= 0 through n, where n is a selected number, and added into 
     // the training data. This will retrieve more data from large numbers because of their uniqueness. 
     @Override
-    public void train(House h) 
+    public void train(House h)
     {
         totalHouseCount++;
         
         double[] houseArray = h.getFeaturesArray();
         
         double truePrice = houseArray[houseArray.length-1];
+//        System.out.println(truePrice);
         int houseCat = determineCategory(truePrice);
-        
+//        System.out.println(houseCat+"\n------");
         Category cat = categories[houseCat];
         cat.housesInCategory++;
         
-        for (int i = 0; i < houseArray.length; i++) 
+//        for (int i = 0; i < houseArray.length; i++) 
+//        {
+//            double value = houseArray[i];
+//            for(int j = 0; j <= PRICE_DIVIDER_EXP; j++)
+//            {
+//                double reducedValue = Math.floor(value/Math.pow(10, j));
+//                if(reducedValue == 0) break;
+//                
+//                String featureName = "$" + String.valueOf(i) + "$" + String.valueOf(j) + String.valueOf(reducedValue);
+//                if(featureFrequency.containsKey(featureName)) featureFrequency.put(featureName, featureFrequency.remove(featureName)+1);
+//                else featureFrequency.put(featureName, 1);
+//                
+//                if(cat.featureFrequency.containsKey(featureName)) cat.featureFrequency.put(featureName, cat.featureFrequency.remove(featureName)+1);
+//                else cat.featureFrequency.put(featureName, 1);
+//            }
+//        }
+        TreeMap<String, Double> houseMap = h.getFeatures();
+        java.util.Iterator<String> houseIt = houseMap.keySet().iterator();
+        
+        while(houseIt.hasNext())
         {
-            double value = houseArray[i];
-            for(int j = 0; j <= PRICE_DIVIDER_EXP; j++)
-            {
-                double reducedValue = Math.floor(value/Math.pow(10, j));
-                if(reducedValue == 0) break;
-                
-                String featureName = "$" + String.valueOf(i) + "$" + String.valueOf(j) + String.valueOf(reducedValue);
-                if(featureFrequency.containsKey(featureName)) featureFrequency.put(featureName, featureFrequency.remove(featureName)+1);
-                else featureFrequency.put(featureName, 1);
-                
-                if(cat.featureFrequency.containsKey(featureName)) cat.featureFrequency.put(featureName, cat.featureFrequency.remove(featureName)+1);
-                else cat.featureFrequency.put(featureName, 1);
-            }
+            String feature = houseIt.next();
+            String featureName = feature + "$" + houseMap.get(feature);
+            if("area".equals(feature))
+                featureName = feature + "$" + Math.floor(houseMap.get(feature)/100);
+            if("age".equals(feature))
+                featureName = feature + "$" + Math.floor(houseMap.get(feature)/10);
+            
+            if(featureFrequency.containsKey(featureName)) featureFrequency.put(featureName, featureFrequency.remove(featureName)+1);
+            else featureFrequency.put(featureName, 1);
+            
+            if(cat.featureFrequency.containsKey(featureName)) cat.featureFrequency.put(featureName, cat.featureFrequency.remove(featureName)+1);
+            else cat.featureFrequency.put(featureName, 1);
         }
     }
 
     @Override
     public double[] predict(House h) {
         
-        double [] houseArray = h.getFeaturesArray();
+//        double [] houseArray = h.getFeaturesArray();
+        java.util.TreeMap<String, Double> featureMap = h.getFeatures();
         
         int mostLikelyCategory = -1;
         double mostLikelyProbability = Integer.MIN_VALUE;
@@ -121,34 +141,33 @@ public class NaiveBayes extends Classifier {
             }
             
             probabilityOfCategory = Math.log(((double)cat.housesInCategory)/((double)totalHouseCount));
-            int dCount = 0;
-            for(double d : houseArray)
+            
+            java.util.Iterator<String> houseIt = featureMap.keySet().iterator();
+//if(i == 0) System.out.println("---------\n---------");
+            while(houseIt.hasNext())
             {
-                for(int j = 0; j <= PRICE_DIVIDER_EXP; j++)
-                {
-                    double reducedValue = Math.floor(d/Math.pow(10, j));
-                    if(reducedValue == 0) break;
-                    
-                    String featureName = "$" + String.valueOf(dCount++) + "$" + String.valueOf(j) + String.valueOf(reducedValue);
-                    
-                    Integer numOfFeature = featureFrequency.get(featureName);
-                    if(numOfFeature == null) numOfFeature = 0;
-                    
-                    double IDF = Math.log((double)totalFeatureCount/((double)numOfFeature + 1));
-                    
-                    Integer cTF = cat.featureFrequency.get(featureName);
-                    if(cTF == null) cTF = 0;
-                    
-                    probabilityOfHouseGivenCategory += Math.log((double)(cTF+1.0)/ ((double)totalFeatureCount + cTerms.size())) * IDF;
-//                    System.out.println(totalFeatureCount);
-//                    PD *= Math.log(((double)numOfFeature + 1)/((double)totalHouseCount + featureFrequency.size()));
-                }
+                String feature = houseIt.next();
+//                if("area".equals(feature) || "age".equals(feature)) continue;
+                
+                String featureName = feature + "$" + featureMap.get(feature);
+                if("area".equals(feature)) //continue;
+                    featureName = feature + "$" + Math.floor(featureMap.get(feature)/100);
+                if("age".equals(feature)) //continue;
+                    featureName = feature + "$" + Math.floor(featureMap.get(feature)/10);
+//if(i== 0) System.out.println(featureName);
+                
+                Integer cTF = cat.featureFrequency.get(featureName);
+                if(cTF == null) cTF = 0;
+                
+                probabilityOfHouseGivenCategory += Math.log((double)(cTF + 1.0)/((double)totalFeatureCount + cTerms.size()));// * IDF;
+                
             }
+//if(i== 0) System.out.println("--------\n---------");
             
             double PSRD = (probabilityOfHouseGivenCategory + probabilityOfCategory);// - PD;
 //            System.out.println(probabilityOfHouseGivenCategory + "\t" + probabilityOfCategory);
             
-            System.out.println(PSRD + "\t" + determinePriceRange(i)[0]);
+//            System.out.println(PSRD + "\t" + determinePriceRange(i)[0]);
             
             if(PSRD > mostLikelyProbability)
             {
@@ -156,8 +175,34 @@ public class NaiveBayes extends Classifier {
                 mostLikelyProbability = PSRD;
             }
         }
-        System.out.println(mostLikelyCategory);
+//        System.out.println(mostLikelyCategory);
         return determinePriceRange(mostLikelyCategory);
+    }
+    
+    public void printCatDetails()
+    {
+        
+        System.out.println("Overall Feature Frequency");
+        java.util.Iterator<String> fitIt = featureFrequency.keySet().iterator();
+        
+        while(fitIt.hasNext())
+        {
+            String key = fitIt.next();
+            System.out.println(key + "\t" + featureFrequency.get(key));
+        }
+        
+        for (int i = 0; i < categories.length; i++) {
+            Category category = categories[i];
+            System.out.println("\n-----------\nCategory: " + i + "\n----------");
+            
+            java.util.Iterator<String> keys = category.featureFrequency.keySet().iterator();
+            
+            while(keys.hasNext())
+            {
+                String key = keys.next();
+                System.out.println(key + "\t" + category.featureFrequency.get(key));
+            }
+        }
     }
 
     @Override
