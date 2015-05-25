@@ -4,6 +4,7 @@ package Controller;
 import Classifiers.Classifier;
 import Resources.House;
 import java.util.List;
+import javafx.beans.property.SimpleIntegerProperty;
 
 /**
  * A runnable training class that will allow the main controller class to 
@@ -31,7 +32,16 @@ public class TrainingThread implements Runnable {
     
     @Override
     public void run() {
+        javafx.beans.property.IntegerProperty iP = new SimpleIntegerProperty();
+        iP.set(0);
+//        System.out.println("CHECK1");
+//        houses.stream().forEach(h -> {
+//            c.train(h);
+//            iP.set(iP.get() + 1);
+//                });
         houses.stream().forEach(h -> c.train(h));
+        System.out.println("Finished Training");
+//        System.out.println(iP.get());
     }
     
 }
