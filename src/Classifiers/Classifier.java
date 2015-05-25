@@ -91,7 +91,7 @@ public abstract class Classifier {
 	 */
 	protected double[] determinePriceRange(int category) {
 		double[] priceReturn;
-		if (category < priceRange.length)
+		if (category < priceRange.length-1)
 			priceReturn = new double[] { priceRange[category],
 					priceRange[category + 1] - 1 };
 		else
