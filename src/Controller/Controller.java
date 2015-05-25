@@ -42,13 +42,21 @@ public class Controller {
         List<House> allHouses = ZillowParser.parseZillowDataFile(new java.io.File("data\\ZillowDataTrain.csv"));
         partitionHouses(allHouses);
         
-        double[] categories = Classifier.generatePriceRanges(allHouses, 2, true);
+        double[] categories = Classifier.generatePriceRanges(allHouses, 3, true);
         ANN = new ANN(categories);
         NB = new NaiveBayes(categories);
         RF = new RandomForest(categories);
         
         ExecutorService e = Executors.newFixedThreadPool(3);
-        
+        trainingHouses = new ArrayList<>();
+//        for (int i = 0; i < 20; i++) {
+            
+            trainingHouses.add(allHouses.get(0));
+            trainingHouses.add(allHouses.get(1));
+            trainingHouses.add(allHouses.get(2));
+//            trainingHouses.add(allHouses.get(3));
+            
+//        }
 //        e.submit(new TrainingThread(trainingHouses, ANN));
         e.submit(new TrainingThread(trainingHouses, NB));
 //        e.submit(new TrainingThread(trainingHouses, RF));
@@ -60,7 +68,8 @@ public class Controller {
         
 //        for(House h : testHouses)
 //        {
-        House h = testHouses.get(0);
+//        House h = testHouses.get(0);
+        House h = allHouses.get(1);
             double[] NBPrediction = NB.predict(h);
             System.out.print("Price Sold: " + h.getPriceSold() + "\t" + "Predicted: $" + NBPrediction[0] + " - ");
             if(NBPrediction.length > 1) System.out.println("$" + NBPrediction[1]);

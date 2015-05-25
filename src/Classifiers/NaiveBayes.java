@@ -140,15 +140,15 @@ public class NaiveBayes extends Classifier {
                     if(cTF == null) cTF = 0;
                     
                     probabilityOfHouseGivenCategory += Math.log((double)(cTF+1.0)/ ((double)totalFeatureCount + cTerms.size())) * IDF;
-                    
+//                    System.out.println(totalFeatureCount);
 //                    PD *= Math.log(((double)numOfFeature + 1)/((double)totalHouseCount + featureFrequency.size()));
                 }
             }
             
             double PSRD = (probabilityOfHouseGivenCategory + probabilityOfCategory);// - PD;
-            System.out.println(probabilityOfHouseGivenCategory + "\t" + probabilityOfCategory);
+//            System.out.println(probabilityOfHouseGivenCategory + "\t" + probabilityOfCategory);
             
-            System.out.println(PSRD + "\t" + mostLikelyProbability + "\t" + determinePriceRange(i)[0]);
+            System.out.println(PSRD + "\t" + determinePriceRange(i)[0]);
             
             if(PSRD > mostLikelyProbability)
             {
