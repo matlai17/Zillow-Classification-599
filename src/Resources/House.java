@@ -66,7 +66,6 @@ public class House {
         {
             TreeMap<String, Double> features = new TreeMap<>();
             features.put("zip", Double.parseDouble(houseAddress.getZip()));
-            features.put("pricesold", priceSold);
             features.put("bedrooms", (double)noOfBedroom);
             features.put("bathrooms", noOfBathroom);
             features.put("area", area);
