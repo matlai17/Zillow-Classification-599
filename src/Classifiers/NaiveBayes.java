@@ -66,9 +66,15 @@ public class NaiveBayes extends Classifier {
     // Train data. Each feature should be divided by successive numbers 10^N for N= 0 through n, where n is a selected number, and added into 
     // the training data. This will retrieve more data from large numbers because of their uniqueness. 
     @Override
+    public void train(List<House> houses)
+    {
+    	houses.stream().forEach(h -> train(h));
+    }
+    
+    
     public void train(House h)
     {
-        totalHouseCount++;
+    	totalHouseCount++;
         
         double[] houseArray = h.getFeaturesArray();
         

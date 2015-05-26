@@ -114,7 +114,8 @@ public abstract class Classifier {
 	 * @param h
 	 *            A House object that the Zillow Classifier will be trained with
 	 */
-	public abstract void train(House h);
+	//public abstract void train(House h);
+	public abstract void train(List<House> houses);
 
 	/**
 	 * This function receives a House object and will attempt to classify the
