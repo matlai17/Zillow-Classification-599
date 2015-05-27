@@ -43,6 +43,7 @@ public class Controller {
         partitionHouses(allHouses);
         
         double[] categories = Classifier.generatePriceRanges(allHouses, 125, true);
+        //Dynamic category sizes increases accuracy with fewer number of categories when using Naive-Bayes. My guess is that the outlier categories are having a negative effect on the prediction model for NB.
         ANN = new ANN(categories);
         NB = new NaiveBayes(categories);
         RF = new RandomForest(categories);
