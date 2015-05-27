@@ -111,10 +111,11 @@ public abstract class Classifier {
 	 * Classifier is trained is dependent on the Classifier used and algorithm
 	 * that is selected.
 	 * 
-	 * @param h
-	 *            A House object that the Zillow Classifier will be trained with
+	 * @param houses
+	 *            A List of House objects that the Zillow Classifier will be trained with
 	 */
-	public abstract void train(House h);
+	//public abstract void train(House h);
+	public abstract void train(List<House> houses);
 
 	/**
 	 * This function receives a House object and will attempt to classify the
@@ -204,7 +205,7 @@ public abstract class Classifier {
 		if (numberOfCategories > sortedUniquePrices.length)
 			try {
 				throw new HouseCategoryMismatchException(
-						"There cannot be more categories than unique house prices when performing an even distribution. Please decrease the number of categories to be generated.");
+						"There cannot be more categories (" + numberOfCategories + ") than unique house prices (" + sortedUniquePrices.length + ") when performing an even distribution. Please decrease the number of categories to be generated.");
 			} catch (HouseCategoryMismatchException ex) {
 				Logger.getLogger(Classifier.class.getName()).log(Level.SEVERE,
 						null, ex);

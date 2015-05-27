@@ -1,6 +1,8 @@
 
 package Classifiers;
 
+import java.util.List;
+
 import Resources.House;
 
 /**
@@ -22,7 +24,8 @@ public class RandomForest extends Classifier {
     }
 
     @Override
-    public void train(House h) {
+    public void train(List<House> houses)
+    {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

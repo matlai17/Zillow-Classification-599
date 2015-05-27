@@ -66,9 +66,15 @@ public class NaiveBayes extends Classifier {
     // Train data. Each feature should be divided by successive numbers 10^N for N= 0 through n, where n is a selected number, and added into 
     // the training data. This will retrieve more data from large numbers because of their uniqueness. 
     @Override
+    public void train(List<House> houses)
+    {
+    	houses.stream().forEach(h -> train(h));
+    }
+    
+    
     public void train(House h)
     {
-        totalHouseCount++;
+    	totalHouseCount++;
         
         double[] houseArray = h.getFeaturesArray();
         
@@ -136,20 +142,18 @@ public class NaiveBayes extends Classifier {
                 
                 String featureName = feature + "$" + featureMap.get(feature);
                 if("area".equals(feature))
-                    featureName = feature + "$" + Math.floor(featureMap.get(feature)/AREA_MODIFIER);
+                    featureName = feature + "$" + Math.floor(featureMap.get(feature)/100);
                 if("age".equals(feature))
-                    featureName = feature + "$" + Math.floor(featureMap.get(feature)/YEAR_MODIFIER);
+                    featureName = feature + "$" + Math.floor(featureMap.get(feature)/10);
                 
                 Integer cTF = cat.featureFrequency.get(featureName);
                 if(cTF == null) cTF = 0;
                 
-                probabilityOfHouseGivenCategory += Math.log((double)(cTF + 1.0)/((double)totalFeatureCount + cTerms.size()));
+                probabilityOfHouseGivenCategory += Math.log((double)(cTF + 1.0)/(totalFeatureCount + featureMap.size()));// * IDF;
                 
             }
             
             double PSRD = (probabilityOfHouseGivenCategory + probabilityOfCategory);
-            
-//            System.out.println("\t" + PSRD + "\t" + determinePriceRange(i)[0]);
             
             if(PSRD > mostLikelyProbability)
             {
@@ -157,6 +161,7 @@ public class NaiveBayes extends Classifier {
                 mostLikelyProbability = PSRD;
             }
         }
+        
         return determinePriceRange(mostLikelyCategory);
     }
     

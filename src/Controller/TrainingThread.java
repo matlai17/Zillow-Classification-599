@@ -39,7 +39,8 @@ public class TrainingThread implements Runnable {
 //            c.train(h);
 //            iP.set(iP.get() + 1);
 //                });
-        houses.stream().forEach(h -> c.train(h));
+        //houses.stream().forEach(h -> c.train(h));
+        c.train(houses);
         System.out.println("Finished Training");
 //        System.out.println(iP.get());
     }
