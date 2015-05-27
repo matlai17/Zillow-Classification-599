@@ -73,9 +73,7 @@ public class NaiveBayes extends Classifier {
         double[] houseArray = h.getFeaturesArray();
         
         double truePrice = houseArray[houseArray.length-1];
-//        System.out.println(truePrice);
         int houseCat = determineCategory(truePrice);
-//        System.out.println(houseCat+"\n------");
         Category cat = categories[houseCat];
         cat.housesInCategory++;
         
@@ -84,6 +82,7 @@ public class NaiveBayes extends Classifier {
         
         while(houseIt.hasNext())
         {
+            int increment = 1;
             String feature = houseIt.next();
             String featureName = feature + "$" + houseMap.get(feature);
             if("area".equals(feature))
@@ -91,16 +90,18 @@ public class NaiveBayes extends Classifier {
             if("age".equals(feature))
                 featureName = feature + "$" + Math.floor(houseMap.get(feature)/YEAR_MODIFIER);
             
+            if("zip".equals(feature)) increment = 1;
+            
             if(featureFrequency.containsKey(featureName)) featureFrequency.put(featureName, featureFrequency.remove(featureName)+1);
-            else featureFrequency.put(featureName, 1);
+            else featureFrequency.put(featureName, increment);
             
             if(cat.featureFrequency.containsKey(featureName)) cat.featureFrequency.put(featureName, cat.featureFrequency.remove(featureName)+1);
-            else cat.featureFrequency.put(featureName, 1);
+            else cat.featureFrequency.put(featureName, increment);
         }
     }
     
-    private final double AREA_MODIFIER = 1000;
-    private final double YEAR_MODIFIER = 5;
+    private final double AREA_MODIFIER = 100;
+    private final double YEAR_MODIFIER = 10;
     
 
     @Override
@@ -147,6 +148,8 @@ public class NaiveBayes extends Classifier {
             }
             
             double PSRD = (probabilityOfHouseGivenCategory + probabilityOfCategory);
+            
+//            System.out.println("\t" + PSRD + "\t" + determinePriceRange(i)[0]);
             
             if(PSRD > mostLikelyProbability)
             {
