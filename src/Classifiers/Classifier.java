@@ -205,7 +205,7 @@ public abstract class Classifier {
 		if (numberOfCategories > sortedUniquePrices.length)
 			try {
 				throw new HouseCategoryMismatchException(
-						"There cannot be more categories than unique house prices when performing an even distribution. Please decrease the number of categories to be generated.");
+						"There cannot be more categories (" + numberOfCategories + ") than unique house prices (" + sortedUniquePrices.length + ") when performing an even distribution. Please decrease the number of categories to be generated.");
 			} catch (HouseCategoryMismatchException ex) {
 				Logger.getLogger(Classifier.class.getName()).log(Level.SEVERE,
 						null, ex);
