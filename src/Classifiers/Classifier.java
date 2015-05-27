@@ -111,8 +111,8 @@ public abstract class Classifier {
 	 * Classifier is trained is dependent on the Classifier used and algorithm
 	 * that is selected.
 	 * 
-	 * @param h
-	 *            A House object that the Zillow Classifier will be trained with
+	 * @param houses
+	 *            A List of House objects that the Zillow Classifier will be trained with
 	 */
 	//public abstract void train(House h);
 	public abstract void train(List<House> houses);
