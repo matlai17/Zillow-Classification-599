@@ -79,28 +79,10 @@ public class NaiveBayes extends Classifier {
         double[] houseArray = h.getFeaturesArray();
         
         double truePrice = houseArray[houseArray.length-1];
-//        System.out.println(truePrice);
         int houseCat = determineCategory(truePrice);
-//        System.out.println(houseCat+"\n------");
         Category cat = categories[houseCat];
         cat.housesInCategory++;
         
-//        for (int i = 0; i < houseArray.length; i++) 
-//        {
-//            double value = houseArray[i];
-//            for(int j = 0; j <= PRICE_DIVIDER_EXP; j++)
-//            {
-//                double reducedValue = Math.floor(value/Math.pow(10, j));
-//                if(reducedValue == 0) break;
-//                
-//                String featureName = "$" + String.valueOf(i) + "$" + String.valueOf(j) + String.valueOf(reducedValue);
-//                if(featureFrequency.containsKey(featureName)) featureFrequency.put(featureName, featureFrequency.remove(featureName)+1);
-//                else featureFrequency.put(featureName, 1);
-//                
-//                if(cat.featureFrequency.containsKey(featureName)) cat.featureFrequency.put(featureName, cat.featureFrequency.remove(featureName)+1);
-//                else cat.featureFrequency.put(featureName, 1);
-//            }
-//        }
         TreeMap<String, Double> houseMap = h.getFeatures();
         java.util.Iterator<String> houseIt = houseMap.keySet().iterator();
         
@@ -124,12 +106,10 @@ public class NaiveBayes extends Classifier {
     @Override
     public double[] predict(House h) {
         
-//        double [] houseArray = h.getFeaturesArray();
         java.util.TreeMap<String, Double> featureMap = h.getFeatures();
         
         int mostLikelyCategory = -1;
         double mostLikelyProbability = Integer.MIN_VALUE;
-//        double mostLikelyProbability = Integer.MAX_VALUE;
         
         for (int i = 0; i < categories.length; i++) {
             
@@ -149,31 +129,24 @@ public class NaiveBayes extends Classifier {
             probabilityOfCategory = Math.log(((double)cat.housesInCategory)/((double)totalHouseCount));
             
             java.util.Iterator<String> houseIt = featureMap.keySet().iterator();
-//if(i == 0) System.out.println("---------\n---------");
             while(houseIt.hasNext())
             {
                 String feature = houseIt.next();
-//                if("area".equals(feature) || "age".equals(feature)) continue;
                 
                 String featureName = feature + "$" + featureMap.get(feature);
-                if("area".equals(feature)) //continue;
+                if("area".equals(feature))
                     featureName = feature + "$" + Math.floor(featureMap.get(feature)/100);
-                if("age".equals(feature)) //continue;
+                if("age".equals(feature))
                     featureName = feature + "$" + Math.floor(featureMap.get(feature)/10);
-//if(i== 0) System.out.println(featureName);
                 
                 Integer cTF = cat.featureFrequency.get(featureName);
                 if(cTF == null) cTF = 0;
                 
-                probabilityOfHouseGivenCategory += Math.log((double)(cTF + 1.0)/((double)totalFeatureCount + cTerms.size()));// * IDF;
+                probabilityOfHouseGivenCategory += Math.log((double)(cTF + 1.0)/(totalFeatureCount + featureMap.size()));// * IDF;
                 
             }
-//if(i== 0) System.out.println("--------\n---------");
             
-            double PSRD = (probabilityOfHouseGivenCategory + probabilityOfCategory);// - PD;
-//            System.out.println(probabilityOfHouseGivenCategory + "\t" + probabilityOfCategory);
-            
-//            System.out.println(PSRD + "\t" + determinePriceRange(i)[0]);
+            double PSRD = (probabilityOfHouseGivenCategory + probabilityOfCategory);
             
             if(PSRD > mostLikelyProbability)
             {
@@ -181,7 +154,7 @@ public class NaiveBayes extends Classifier {
                 mostLikelyProbability = PSRD;
             }
         }
-//        System.out.println(mostLikelyCategory);
+        
         return determinePriceRange(mostLikelyCategory);
     }
     
