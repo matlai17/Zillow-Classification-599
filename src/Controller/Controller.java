@@ -65,33 +65,34 @@ public class Controller {
 		}
 
 		// NB.printCatDetails();
-		System.out
-				.println("**************************NaiveBayes**************************");
 		double averageCatDifference = 0;
 		int numberTrue = 0;
 		int maxDistance = 0;
 
 		for (House h : testHouses) {
-			double[] NBPrediction = NB.predict(h);
-			double avg = NBPrediction[0];
-			if (NBPrediction.length > 1)
-				avg = (avg + NBPrediction[1]) / 2;
+			// System.out.print("House Address: " + h.getHouseCompleteAddress()
+			// + "\t");
+			System.out.print("Price Sold: " + h.getPriceSold() + "\t");
 
-			int determinedCat = NB.determineCategory(avg);
+			int determinedCat_NB = NB.determineCategory(logs(h, NB.predict(h)));
+			int determinedCat_ANN = ANN.determineCategory(logs(h,
+					ANN.predict(h)));
+			System.out.print("Predict ANN :" + logs(h, ANN.predict(h)) + "\t");
+			System.out.print("Predict NB :" + logs(h, NB.predict(h)) + "\t");
+			System.out.print("Zestimate :" + h.getZestimate() + "\t");
+			System.out.print("Difference  :"
+					+ (h.getZestimate() - logs(h, ANN.predict(h))) + "\n");
 			int trueCat = NB.determineCategory(h.getPriceSold());
-			averageCatDifference += Math.abs(determinedCat - trueCat);
-			if (Math.abs(determinedCat - trueCat) > maxDistance)
-				maxDistance = Math.abs(determinedCat - trueCat);
-			if (determinedCat == trueCat)
+			// int trueCat_ANN = ANN.determineCategory(h.getPriceSold());
+
+			averageCatDifference += Math.abs(determinedCat_ANN - trueCat);
+			if (Math.abs(determinedCat_ANN - trueCat) > maxDistance)
+				maxDistance = Math.abs(determinedCat_ANN - trueCat);
+			if (determinedCat_ANN == trueCat)
 				numberTrue++;
 
-			System.out.print("Price Sold: " + h.getPriceSold() + "\t"
-					+ "Predicted: $" + NBPrediction[0] + " - ");
-			if (NBPrediction.length > 1)
-				System.out.println("$" + NBPrediction[1]);
-
 		}
-
+		// Below Analysis is for ANN we can do similar for other classifier
 		System.out.println("Average Difference in Category: "
 				+ averageCatDifference / testHouses.size());
 		System.out.println("Absolute Correctness: " + numberTrue + "/"
@@ -99,41 +100,13 @@ public class Controller {
 				/ (double) testHouses.size());
 		System.out.println("Maximum Difference in Category: " + maxDistance);
 
-		System.out
-				.println("**************************ANN**************************");
-		// TODO Need to figure our better way to do it double
+	}
 
-		int averageCatDifference_ANN = 0;
-		int numberTrue_ANN = 0;
-		int maxDistance_ANN = 0;
-		for (House h : testHouses) {
-			double[] ANNPrediction = ANN.predict(h);
-			double avg = ANNPrediction[0];
-			if (ANNPrediction.length > 1)
-				avg = (avg + ANNPrediction[1]) / 2;
-
-			int determinedCat = ANN.determineCategory(avg);
-			int trueCat = ANN.determineCategory(h.getPriceSold());
-			averageCatDifference_ANN += Math.abs(determinedCat - trueCat);
-			if (Math.abs(determinedCat - trueCat) > maxDistance_ANN)
-				maxDistance_ANN = Math.abs(determinedCat - trueCat);
-			if (determinedCat == trueCat)
-				numberTrue_ANN++;
-
-			System.out.print("Price Sold: " + h.getPriceSold() + "\t"
-					+ "Predicted: $" + ANNPrediction[0] + " - ");
-			if (ANNPrediction.length > 1)
-				System.out.println("$" + ANNPrediction[1]);
-		}
-
-		System.out.println("Average Difference in Category: "
-				+ averageCatDifference_ANN / testHouses.size());
-		System.out.println("Absolute Correctness: " + numberTrue_ANN + "/"
-				+ testHouses.size() + " = " + (double) numberTrue_ANN
-				/ (double) testHouses.size());
-		System.out
-				.println("Maximum Difference in Category: " + maxDistance_ANN);
-
+	public double logs(House h, double[] prediction) {
+		double avg = prediction[0];
+		if (prediction.length > 1)
+			avg = (avg + prediction[1]) / 2;
+		return avg;
 	}
 
 	private void partitionHouses(List<House> allHouses) {
