@@ -42,8 +42,8 @@ public class Controller {
 						"data\\ZillowDataTrain.csv"));
 		partitionHouses(allHouses);
 
-		double[] categories = Classifier.generatePriceRanges(allHouses, 125,
-				true);
+		double[] categories = Classifier.generatePriceRanges(allHouses, 50,
+				false);
 		// Dynamic category sizes increases accuracy with fewer number of
 		// categories when using Naive-Bayes. My guess is that the outlier
 		// categories are having a negative effect on the prediction model for
@@ -141,7 +141,7 @@ public class Controller {
 		testHouses = new ArrayList<>();
 
 		int numTestHouses = allHouses.size() / 10;
-		Random r = new Random();
+		Random r = new Random(0); // Random r = new Random(13);
 		java.util.HashSet<Integer> bag = new java.util.HashSet<>();
 
 		while (bag.size() < numTestHouses)
