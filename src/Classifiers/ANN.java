@@ -32,12 +32,12 @@ public class ANN extends Classifier {
 	@Override
 	public void train(List<House> houses) {
 		double[] houseArray = null;
-		double[] housefeature = null;
-		double[][] trainingset = new double[houses.size()][9];
+		int col = houses.get(0).getFeaturesArray().length;
+		int row = houses.size();
+		double[][] trainingset = new double[row][col];
 		int i = 0;
 
 		for (House house : houses) {
-			// TODO
 			houseArray = house.getFeaturesArray();
 			for (int k = 0; k < houseArray.length - 1; k++) {
 				trainingset[i][k] = houseArray[k];
@@ -111,7 +111,6 @@ public class ANN extends Classifier {
 	}
 
 	public static double findMaxDistance(double[][] kernelSet) {
-		int sizeColumns = kernelSet[0].length;
 		int sizeRows = kernelSet.length;
 		double[] distance = new double[sizeRows];
 		double maxDistance = 0;
@@ -155,8 +154,7 @@ public class ANN extends Classifier {
 		double output[] = new double[weights.length];
 
 		for (int i = 0; i < weights.length; i++) {
-			output[i] = calcWeightedSum(weights[i], perceptronInput); // check
-																		// this
+			output[i] = calcWeightedSum(weights[i], perceptronInput);
 		}
 
 		return findMaxIndex(output);
@@ -189,13 +187,11 @@ public class ANN extends Classifier {
 				indexMax = i;
 			}
 		}
-		// System.out.println("indexMax  :"+ indexMax);
 		return indexMax;
 	}
 
 	@Override
 	public double[] predict(House h) {
-
 		double[] houseArray = null;
 		int count = 0;
 		int classify = 0;
@@ -205,7 +201,6 @@ public class ANN extends Classifier {
 		perceptrons = calcPerceptronInput(houseArray, kernelSet, variance);
 		int col = houseArray.length - 1;
 		classify = classifyInput(perceptrons, weights);
-		// if (classify == houseArray[col])
 		if (classify == determineCategory(houseArray[col]))
 			count++;
 		return determinePriceRange(classify);
