@@ -25,6 +25,7 @@ public class Controller {
 
 	List<House> trainingHouses;
 	List<House> testHouses;
+	public static String[][] result;
 	ANN ANN;
 	NaiveBayes NB;
 	RandomForest RF;
@@ -66,12 +67,15 @@ public class Controller {
 
 		// NB.printCatDetails();
 		double averageCatDifference = 0;
+		int cnt = 0;
 		int numberTrue = 0;
 		int maxDistance = 0;
+		result = new String[testHouses.size()][6];
 
 		for (House h : testHouses) {
 			// System.out.print("House Address: " + h.getHouseCompleteAddress()
 			// + "\t");
+
 			System.out.print("Price Sold: " + h.getPriceSold() + "\t");
 
 			int determinedCat_NB = NB.determineCategory(logs(h, NB.predict(h)));
@@ -82,6 +86,15 @@ public class Controller {
 			System.out.print("Zestimate :" + h.getZestimate() + "\t");
 			System.out.print("Difference  :"
 					+ (h.getZestimate() - logs(h, ANN.predict(h))) + "\n");
+
+			result[cnt][0] = h.getHouseCompleteAddress();
+			result[cnt][1] = h.getHouseAddress().getCity();
+			result[cnt][2] = String.valueOf(h.getPriceSold());
+			result[cnt][3] = String.valueOf(h.getZestimate());
+			result[cnt][4] = String.valueOf(logs(h, ANN.predict(h)));
+			result[cnt][5] = String.valueOf(logs(h, NB.predict(h)));
+			cnt++;
+
 			int trueCat = NB.determineCategory(h.getPriceSold());
 			// int trueCat_ANN = ANN.determineCategory(h.getPriceSold());
 
@@ -92,6 +105,8 @@ public class Controller {
 				numberTrue++;
 
 		}
+
+		int a = result.length;
 		// Below Analysis is for ANN we can do similar for other classifier
 		System.out.println("Average Difference in Category: "
 				+ averageCatDifference / testHouses.size());
