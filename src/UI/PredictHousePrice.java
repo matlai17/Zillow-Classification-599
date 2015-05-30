@@ -81,6 +81,7 @@ public class PredictHousePrice {
 				}
 			}
                 table.setModel(new DefaultTableModel(tblData, columnNames));
+                table.getColumnModel().getColumn(0).setPreferredWidth(200);
 	}
 
 	/**
@@ -142,8 +143,6 @@ public class PredictHousePrice {
                 scrollPane.addKeyListener(kL);
                 table.addKeyListener(kL);
                 comboBox.addKeyListener(kL);
-                
-                table.getColumnModel().getColumn(0).setPreferredWidth(200);
                 
 		frame.setVisible(true);
 	}
