@@ -121,7 +121,7 @@ public class Controller {
 
 	}
 
-	public double logs(House h, double[] prediction) {
+	public final double logs(House h, double[] prediction) {
 		double avg = prediction[0];
 		if (prediction.length > 1)
 			avg = (avg + prediction[1]) / 2;
