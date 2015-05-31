@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.MouseAdapter;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -61,6 +63,73 @@ public class DreamHouse {
 				lblPredictedPrice.setText("Estimated House Price :" + "$0.00");
 			}
 		});
+                
+                textBed.addFocusListener(new FocusAdapter(){
+                    @Override
+                    public void focusGained(java.awt.event.FocusEvent fe)
+                    {
+                        textBed.setText("");
+                    }
+                    @Override
+                    public void focusLost(java.awt.event.FocusEvent fe)
+                    {
+                        if(textBed.getText().equals(""))
+                            textBed.setText("#Bed");
+                    }
+                });
+                textBath.addFocusListener(new FocusAdapter(){
+                    @Override
+                    public void focusGained(java.awt.event.FocusEvent fe)
+                    {
+                        textBath.setText("");
+                    }
+                    @Override
+                    public void focusLost(java.awt.event.FocusEvent fe)
+                    {
+                        if(textBath.getText().equals(""))
+                            textBath.setText("#Bath");
+                    }
+                });
+                textArea.addFocusListener(new FocusAdapter(){
+                    @Override
+                    public void focusGained(java.awt.event.FocusEvent fe)
+                    {
+                        textArea.setText("");
+                    }
+                    @Override
+                    public void focusLost(java.awt.event.FocusEvent fe)
+                    {
+                        if(textArea.getText().equals(""))
+                            textArea.setText("#Area");
+                    }
+                });
+                textYBuilt.addFocusListener(new FocusAdapter(){
+                    @Override
+                    public void focusGained(java.awt.event.FocusEvent fe)
+                    {
+                        textYBuilt.setText("");
+                    }
+                    @Override
+                    public void focusLost(java.awt.event.FocusEvent fe)
+                    {
+                        if(textYBuilt.getText().equals(""))
+                            textYBuilt.setText("#YearBuilt");
+                    }
+                });
+                textPricesqrt.addFocusListener(new FocusAdapter(){
+                    @Override
+                    public void focusGained(java.awt.event.FocusEvent fe)
+                    {
+                        textPricesqrt.setText("");
+                    }
+                    @Override
+                    public void focusLost(java.awt.event.FocusEvent fe)
+                    {
+                        if(textPricesqrt.getText().equals(""))
+                            textPricesqrt.setText("#PricePerSQFT");
+                    }
+                });
+                
 		frame.setBounds(100, 100, 800, 400);
 		lbl.setBounds(4, 0, 108, 20);
 		textBed.setBounds(110, 0, 60, 20);
