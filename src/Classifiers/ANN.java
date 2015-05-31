@@ -211,4 +211,26 @@ public class ANN extends Classifier {
 		return CLASSIFIER_NAME;
 	}
 
+	@Override
+	public double[] predict(String[] h) {
+		// houseArray = h.getFeaturesArray();
+		int count = 0;
+		int i = 0;
+		int classify = 0;
+		double[] house = new double[h.length];
+		double[] perceptrons = new double[h.length];
+
+		for (String feature : h) {
+			house[i] = Double.parseDouble(feature);
+			i++;
+		}
+
+		perceptrons = calcPerceptronInput(house, kernelSet, variance);
+		int col = house.length - 1;
+		classify = classifyInput(perceptrons, weights);
+		// if (classify == determineCategory(house[col]))
+		// count++;
+		return determinePriceRange(classify);
+	}
+
 }

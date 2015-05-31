@@ -17,14 +17,14 @@ public abstract class Classifier {
 	private static final int MAX_HOUSE_PRICE = 10000000;
 
 	private double[] priceRange;
-        
-        protected int numberOfCategories;
+
+	protected int numberOfCategories;
 
 	public Classifier(List<House> houses, int numberOfCategories,
 			boolean evenDistribution) {
 		priceRange = generatePriceRanges(houses, numberOfCategories,
 				evenDistribution);
-                this.numberOfCategories = numberOfCategories;
+		this.numberOfCategories = numberOfCategories;
 	}
 
 	public Classifier(int numberOfCategories, boolean evenDistribution) {
@@ -42,13 +42,12 @@ public abstract class Classifier {
 
 	public Classifier(double[] categories) {
 		priceRange = categories;
-                numberOfCategories = priceRange.length;
+		numberOfCategories = priceRange.length;
 	}
-        
-        public int getNumberOfCategories()
-        {
-            return numberOfCategories;
-        }
+
+	public int getNumberOfCategories() {
+		return numberOfCategories;
+	}
 
 	/**
 	 * Determines the category of a price given the specified classifier
@@ -91,7 +90,7 @@ public abstract class Classifier {
 	 */
 	public final double[] determinePriceRange(int category) {
 		double[] priceReturn;
-		if (category < priceRange.length-1)
+		if (category < priceRange.length - 1)
 			priceReturn = new double[] { priceRange[category],
 					priceRange[category + 1] - 1 };
 		else
@@ -112,9 +111,10 @@ public abstract class Classifier {
 	 * that is selected.
 	 * 
 	 * @param houses
-	 *            A List of House objects that the Zillow Classifier will be trained with
+	 *            A List of House objects that the Zillow Classifier will be
+	 *            trained with
 	 */
-	//public abstract void train(House h);
+	// public abstract void train(House h);
 	public abstract void train(List<House> houses);
 
 	/**
@@ -126,6 +126,16 @@ public abstract class Classifier {
 	 * @return A tuple that predicts the price range of the given House object
 	 */
 	public abstract double[] predict(House h);
+
+	/**
+	 * This function receives a House object and will attempt to classify the
+	 * House object into a price range.
+	 * 
+	 * @param h
+	 *            A House object that the Classifier will attempt to classify
+	 * @return A tuple that predicts the price range of the given House object
+	 */
+	public abstract double[] predict(String[] h);
 
 	/**
 	 * This method will return the Classifier name. This function is used for
@@ -205,7 +215,11 @@ public abstract class Classifier {
 		if (numberOfCategories > sortedUniquePrices.length)
 			try {
 				throw new HouseCategoryMismatchException(
-						"There cannot be more categories (" + numberOfCategories + ") than unique house prices (" + sortedUniquePrices.length + ") when performing an even distribution. Please decrease the number of categories to be generated.");
+						"There cannot be more categories ("
+								+ numberOfCategories
+								+ ") than unique house prices ("
+								+ sortedUniquePrices.length
+								+ ") when performing an even distribution. Please decrease the number of categories to be generated.");
 			} catch (HouseCategoryMismatchException ex) {
 				Logger.getLogger(Classifier.class.getName()).log(Level.SEVERE,
 						null, ex);

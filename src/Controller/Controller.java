@@ -27,6 +27,9 @@ public class Controller {
 	List<House> testHouses;
 	// public static String[][] result;
 	public static ArrayList<String[]> res;
+	public static boolean singleHouse = false;
+	public static String[] dreamHouse = new String[9];
+	public static String houseValue = "";
 	ANN ANN;
 	NaiveBayes NB;
 	RandomForest RF;
@@ -43,9 +46,12 @@ public class Controller {
 				.parseZillowDataFile(new java.io.File(
 						"data\\ZillowDataTrain.csv"));
 		partitionHouses(allHouses);
-
-		double[] categories = Classifier.generatePriceRanges(allHouses, 50,
-				false);
+		double[] categories = null;
+		if (singleHouse) {
+			categories = Classifier.generatePriceRanges(allHouses, 125, true);
+		} else {
+			categories = Classifier.generatePriceRanges(allHouses, 50, false);
+		}
 		// Dynamic category sizes increases accuracy with fewer number of
 		// categories when using Naive-Bayes. My guess is that the outlier
 		// categories are having a negative effect on the prediction model for
@@ -73,65 +79,72 @@ public class Controller {
 		int maxDistance = 0;
 		res = new ArrayList<String[]>();
 
-		for (House h : testHouses) {
-			System.out.print("Price Sold: " + h.getPriceSold() + "\t");
+		if (singleHouse) {
 
-			int determinedCat_NB = NB.determineCategory(logs(h, NB.predict(h)));
-			int determinedCat_ANN = ANN.determineCategory(logs(h,
-					ANN.predict(h)));
-			System.out.print("Predict ANN :" + logs(h, ANN.predict(h)) + "\t");
-			System.out.print("Predict NB :" + logs(h, NB.predict(h)) + "\t");
-			System.out.print("Zestimate :" + h.getZestimate() + "\t");
-			System.out.print("Difference  :"
-					+ (h.getZestimate() - logs(h, ANN.predict(h))) + "\n");
+			houseValue = String.valueOf(logs(ANN.predict(dreamHouse)));
 
-			res.add(new String[] {
-					h.getHouseCompleteAddress(),
-					h.getHouseAddress().getCity() + " "
-							+ h.getHouseAddress().getState(),
-					String.valueOf(h.getNoOfBedroom()),
-					String.valueOf(h.getNoOfBathroom()),
-					String.valueOf(h.getPricePerSQFT()),
-					String.valueOf(h.getSchoolElem()),
-					String.valueOf(h.getSchoolHigh()),
-					String.valueOf(h.getSchoolMid()),
-					String.valueOf(h.getBuiltYear()),
-					String.valueOf(h.getArea()),
-					String.valueOf(h.getPriceSold()),
-					String.valueOf(h.getZestimate()),
-					String.valueOf(logs(h, ANN.predict(h))),
-					String.valueOf(logs(h, NB.predict(h))) });
-			cnt++;
+		} else {
+			for (House h : testHouses) {
+				System.out.print("Price Sold: " + h.getPriceSold() + "\t");
 
-			int trueCat = NB.determineCategory(h.getPriceSold());
-			// int trueCat_ANN = ANN.determineCategory(h.getPriceSold());
+				int determinedCat_NB = NB
+						.determineCategory(logs(NB.predict(h)));
+				int determinedCat_ANN = ANN.determineCategory(logs(ANN
+						.predict(h)));
+				System.out.print("Predict ANN :" + logs(ANN.predict(h)) + "\t");
+				System.out.print("Predict NB :" + logs(NB.predict(h)) + "\t");
+				System.out.print("Zestimate :" + h.getZestimate() + "\t");
+				System.out.print("Difference  :"
+						+ (h.getZestimate() - logs(ANN.predict(h))) + "\n");
+				res.add(new String[] {
+						h.getHouseCompleteAddress(),
+						h.getHouseAddress().getCity() + " "
+								+ h.getHouseAddress().getState(),
+						String.valueOf(h.getNoOfBedroom()),
+						String.valueOf(h.getNoOfBathroom()),
+						String.valueOf(h.getPricePerSQFT()),
+						String.valueOf(h.getSchoolElem()),
+						String.valueOf(h.getSchoolHigh()),
+						String.valueOf(h.getSchoolMid()),
+						String.valueOf(h.getBuiltYear()),
+						String.valueOf(h.getArea()),
+						String.valueOf(h.getPriceSold()),
+						String.valueOf(h.getZestimate()),
+						String.valueOf(logs(ANN.predict(h))),
+						String.valueOf(logs(NB.predict(h))) });
+				cnt++;
 
-			averageCatDifference += Math.abs(determinedCat_ANN - trueCat);
-			if (Math.abs(determinedCat_ANN - trueCat) > maxDistance)
-				maxDistance = Math.abs(determinedCat_ANN - trueCat);
-			if (determinedCat_ANN == trueCat)
-				numberTrue++;
+				int trueCat = NB.determineCategory(h.getPriceSold());
+				// int trueCat_ANN = ANN.determineCategory(h.getPriceSold());
 
+				averageCatDifference += Math.abs(determinedCat_ANN - trueCat);
+				if (Math.abs(determinedCat_ANN - trueCat) > maxDistance)
+					maxDistance = Math.abs(determinedCat_ANN - trueCat);
+				if (determinedCat_ANN == trueCat)
+					numberTrue++;
+
+			}
+
+			// Below Analysis is for ANN we can do similar for other classifier
+			System.out.println("Average Difference in Category: "
+					+ averageCatDifference / testHouses.size());
+			System.out.println("Absolute Correctness: " + numberTrue + "/"
+					+ testHouses.size() + " = " + (double) numberTrue
+					/ (double) testHouses.size());
+			System.out
+					.println("Maximum Difference in Category: " + maxDistance);
 		}
-
-		// Below Analysis is for ANN we can do similar for other classifier
-		System.out.println("Average Difference in Category: "
-				+ averageCatDifference / testHouses.size());
-		System.out.println("Absolute Correctness: " + numberTrue + "/"
-				+ testHouses.size() + " = " + (double) numberTrue
-				/ (double) testHouses.size());
-		System.out.println("Maximum Difference in Category: " + maxDistance);
 
 	}
 
-	public final double logs(House h, double[] prediction) {
+	public final double logs(double[] prediction) {
 		double avg = prediction[0];
 		if (prediction.length > 1)
 			avg = (avg + prediction[1]) / 2;
 		return avg;
 	}
 
-	private void partitionHouses(List<House> allHouses) {
+	public void partitionHouses(List<House> allHouses) {
 		trainingHouses = new ArrayList<>();
 		testHouses = new ArrayList<>();
 
