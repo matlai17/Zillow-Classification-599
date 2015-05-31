@@ -2,6 +2,7 @@ package UI;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -104,6 +105,8 @@ public class PredictHousePrice {
 		frame.setBounds(0, 0, 1200, 700);
 		frame.getContentPane().setLayout(new BorderLayout(0, 10));
 		frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
+		frame.getContentPane().setBackground(
+				UIManager.getColor("InternalFrame.activeTitleGradient"));
 		// frame.getContentPane().add(new JButton("Left"), BorderLayout.WEST);
 		// frame.getContentPane().add(new JButton("Center"),
 		// BorderLayout.CENTER);
@@ -133,13 +136,14 @@ public class PredictHousePrice {
 		JComboBox comboBox = new JComboBox(city.toArray());
 		// JComboBox comboBox1 = new JComboBox(city.toArray());
 		JLabel lbl = new JLabel("Select City");
+		lbl.setFont(new Font("Tahoma", Font.BOLD, 13));
 		comboBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				showtable(test, comboBox.getSelectedItem().toString());
 			}
 		});
-		lbl.setBounds(5, 0, 98, 20);
+		lbl.setBounds(10, 0, 98, 20);
 		comboBox.setBounds(104, 0, 298, 20);
 		// comboBox.setBounds(208, 0, 298, 20);
 		frame.getContentPane().add(lbl, BorderLayout.BEFORE_FIRST_LINE);
