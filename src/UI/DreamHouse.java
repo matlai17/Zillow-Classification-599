@@ -10,6 +10,7 @@ import java.awt.event.FocusAdapter;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
@@ -97,6 +98,18 @@ public class DreamHouse {
 						+ Controller.houseValue);
 			}
 		});
+
+		String[] columnNames = { "City", "ZipCode" };
+
+		String[][] data = { { "Alhambra CA", "91801" },
+				{ "Alta Loma CA", "91737" }, { "Arcadia CA", "91007" },
+				{ "Covina CA", "91724" }, { "Diamond Bar CA", "91765" },
+				{ "Monrovia CA", "91016" }, { "Pasadena CA", "91105" },
+				{ "Pomona CA", "91765" }, { "Santa Monica CA", "90404" },
+				{ "Rancho Cucamonga CA", "91739" } };
+
+		JTable table = new JTable(data, columnNames);
+
 		zipCode.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(java.awt.event.FocusEvent fe) {
@@ -206,6 +219,7 @@ public class DreamHouse {
 		schoolHigh.setBounds(655, 0, 80, 20);
 		btnPredict.setBounds(745, 0, 80, 20);
 		lblPredictedPrice.setBounds(115, 40, 300, 20);
+		table.setBounds(115, 80, 300, 160);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().add(lbl, BorderLayout.BEFORE_FIRST_LINE);
 		frame.getContentPane().add(zipCode, BorderLayout.NORTH);
@@ -218,6 +232,7 @@ public class DreamHouse {
 		frame.getContentPane().add(schoolHigh, BorderLayout.NORTH);
 		frame.getContentPane().add(btnPredict, BorderLayout.NORTH);
 		frame.getContentPane().add(lblPredictedPrice, BorderLayout.NORTH);
+		frame.getContentPane().add(table, BorderLayout.NORTH);
 		frame.setVisible(true);
 	}
 }

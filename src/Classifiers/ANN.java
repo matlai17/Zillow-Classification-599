@@ -13,7 +13,7 @@ import Resources.House;
 public class ANN extends Classifier {
 
 	private final String CLASSIFIER_NAME = "Artificial Neural Network";
-	public double kernelProportion = 1;
+	public double kernelProportion = .1;
 	public double varianceMaxDistanceProportion = 1;
 	public double learningRate = .1;
 	public int nIterations = 1;
