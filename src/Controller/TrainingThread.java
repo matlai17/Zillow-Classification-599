@@ -32,17 +32,8 @@ public class TrainingThread implements Runnable {
     
     @Override
     public void run() {
-//        javafx.beans.property.IntegerProperty iP = new SimpleIntegerProperty();
-//        iP.set(0);
-//        System.out.println("CHECK1");
-//        houses.stream().forEach(h -> {
-//            c.train(h);
-//            iP.set(iP.get() + 1);
-//                });
-        //houses.stream().forEach(h -> c.train(h));
         c.train(houses);
-        System.out.println("Finished Training");
-//        System.out.println(iP.get());
+        System.out.println(c.getClassifierName() + " Finished Training");
     }
     
 }
