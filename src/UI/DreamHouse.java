@@ -10,6 +10,7 @@ import java.awt.event.FocusAdapter;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
@@ -148,6 +149,18 @@ public class DreamHouse {
 				lblRFPredictedPrice.setText("RF Estimated House Price :$" + c.houseValue_RF);
 			}
 		});
+
+		String[] columnNames = { "City", "ZipCode" };
+
+		String[][] data = { { "Alhambra CA", "91801" },
+				{ "Alta Loma CA", "91737" }, { "Arcadia CA", "91007" },
+				{ "Covina CA", "91724" }, { "Diamond Bar CA", "91765" },
+				{ "Monrovia CA", "91016" }, { "Pasadena CA", "91105" },
+				{ "Pomona CA", "91765" }, { "Santa Monica CA", "90404" },
+				{ "Rancho Cucamonga CA", "91739" } };
+
+		JTable table = new JTable(data, columnNames);
+
 		zipCode.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(java.awt.event.FocusEvent fe) {
