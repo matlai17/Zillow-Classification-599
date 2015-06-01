@@ -16,11 +16,17 @@ import javax.swing.UIManager;
 
 import Classifiers.ANN;
 import Controller.Controller;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
 
 public class DreamHouse {
 
 	private JFrame frame;
 	ANN ANN;
+        Controller c;
 
 	/**
 	 * Launch the application.
@@ -32,17 +38,57 @@ public class DreamHouse {
 				try {
 					DreamHouse window = new DreamHouse();
 					window.frame.setVisible(true);
+                                        
+
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		});
 	}
+        
+        class SwingerWorkerCompletionWaiter implements PropertyChangeListener {
+
+            private JDialog dialog;
+            public SwingerWorkerCompletionWaiter(JDialog dialog)
+            {
+                this.dialog = dialog;
+            }
+            
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if("state".equals(evt.getPropertyName()) && SwingWorker.StateValue.DONE == evt.getNewValue()) 
+                    dialog.dispose();
+            }
+            
+        }
 
 	/**
 	 * Create the application.
 	 */
 	public DreamHouse() {
+            
+                SwingWorker worker = new SwingWorker() {
+                    @Override
+                    protected Object doInBackground() throws Exception {
+                        c = new Controller();
+                        return null;
+                    }
+                };
+                final JDialog dialog = new JDialog();
+                
+                worker.addPropertyChangeListener(new SwingerWorkerCompletionWaiter(dialog));
+                
+                final JOptionPane oPane = new JOptionPane("I am learning. Please wait.", JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);
+                dialog.setTitle("Hello Dave");
+                dialog.setModal(true);
+                dialog.setContentPane(oPane);
+                dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+                dialog.pack();
+                dialog.setLocationRelativeTo(null);
+                worker.execute();
+                dialog.setVisible(true);
 		initialize();
 	}
 
@@ -57,8 +103,12 @@ public class DreamHouse {
 		JLabel lbl = new JLabel("Enter Requirement");
 		lbl.setVerticalAlignment(SwingConstants.BOTTOM);
 		lbl.setFont(new Font("Tahoma", Font.BOLD, 13));
-		JLabel lblPredictedPrice = new JLabel("Estimated House Price :");
-		lblPredictedPrice.setFont(new Font("Tahoma", Font.BOLD, 14));
+		JLabel lblANNPredictedPrice = new JLabel("ANN Estimated House Price :");
+		lblANNPredictedPrice.setFont(new Font("Tahoma", Font.BOLD, 14));
+		JLabel lblNBPredictedPrice = new JLabel("NB Estimated House Price :");
+		lblNBPredictedPrice.setFont(new Font("Tahoma", Font.BOLD, 14));
+		JLabel lblRFPredictedPrice = new JLabel("RF Estimated House Price :");
+		lblRFPredictedPrice.setFont(new Font("Tahoma", Font.BOLD, 14));
 		JTextField zipCode = new JTextField("#Zip");
 		zipCode.setToolTipText("Enter ZipCode");
 		JTextField textBed = new JTextField("#Bed");
@@ -81,20 +131,21 @@ public class DreamHouse {
 		btnPredict.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Controller.singleHouse = true;
-				Controller.dreamHouse[0] = zipCode.getText();
-				Controller.dreamHouse[1] = textBed.getText();
-				Controller.dreamHouse[2] = textBath.getText();
-				Controller.dreamHouse[3] = textArea.getText();
-				Controller.dreamHouse[4] = textYBuilt.getText();
-				Controller.dreamHouse[5] = schoolElem.getText();
-				Controller.dreamHouse[6] = schoolMid.getText();
-				Controller.dreamHouse[7] = schoolHigh.getText();
-				Controller.dreamHouse[8] = "0.00";
-				Controller.main(null);
-
-				lblPredictedPrice.setText("Estimated House Price :$"
-						+ Controller.houseValue);
+//				Controller.singleHouse = true;
+                                String[] dreamHouse = new String[9];
+				dreamHouse[0] = zipCode.getText();
+				dreamHouse[1] = textBed.getText();
+				dreamHouse[2] = textBath.getText();
+				dreamHouse[3] = textArea.getText();
+				dreamHouse[4] = textYBuilt.getText();
+				dreamHouse[5] = schoolElem.getText();
+				dreamHouse[6] = schoolMid.getText();
+				dreamHouse[7] = schoolHigh.getText();
+				dreamHouse[8] = "0.00";
+                                c.housePrediction(dreamHouse);
+				lblANNPredictedPrice.setText("ANN Estimated House Price :$" + c.houseValue_ANN);
+				lblNBPredictedPrice.setText("NB Estimated House Price :$" + c.houseValue_NB);
+				lblRFPredictedPrice.setText("RF Estimated House Price :$" + c.houseValue_RF);
 			}
 		});
 		zipCode.addFocusListener(new FocusAdapter() {
@@ -205,7 +256,10 @@ public class DreamHouse {
 		schoolMid.setBounds(565, 0, 80, 20);
 		schoolHigh.setBounds(655, 0, 80, 20);
 		btnPredict.setBounds(745, 0, 80, 20);
-		lblPredictedPrice.setBounds(115, 40, 300, 20);
+		lblANNPredictedPrice.setBounds(115, 40, 300, 20);
+		lblNBPredictedPrice.setBounds(115, 70, 300, 20);
+		lblRFPredictedPrice.setBounds(115, 100, 300, 20);
+                frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().add(lbl, BorderLayout.BEFORE_FIRST_LINE);
 		frame.getContentPane().add(zipCode, BorderLayout.NORTH);
@@ -217,7 +271,9 @@ public class DreamHouse {
 		frame.getContentPane().add(schoolMid, BorderLayout.NORTH);
 		frame.getContentPane().add(schoolHigh, BorderLayout.NORTH);
 		frame.getContentPane().add(btnPredict, BorderLayout.NORTH);
-		frame.getContentPane().add(lblPredictedPrice, BorderLayout.NORTH);
+		frame.getContentPane().add(lblANNPredictedPrice, BorderLayout.NORTH);
+		frame.getContentPane().add(lblNBPredictedPrice, BorderLayout.NORTH);
+		frame.getContentPane().add(lblRFPredictedPrice, BorderLayout.NORTH);
 		frame.setVisible(true);
 	}
 }

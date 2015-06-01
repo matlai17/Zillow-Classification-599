@@ -21,6 +21,11 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.table.DefaultTableModel;
 
 import Controller.Controller;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
 
 public class PredictHousePrice {
 
@@ -28,6 +33,7 @@ public class PredictHousePrice {
 	private JTable table;
 	private JScrollPane scrollPane;
 	ArrayList<String[]> test = new ArrayList<String[]>();
+        Controller c;
 
 	/**
 	 * Launch the application.
@@ -56,12 +62,47 @@ public class PredictHousePrice {
 			}
 		});
 	}
+        class SwingerWorkerCompletionWaiter implements PropertyChangeListener {
+
+            private JDialog dialog;
+            public SwingerWorkerCompletionWaiter(JDialog dialog)
+            {
+                this.dialog = dialog;
+            }
+
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                if("state".equals(evt.getPropertyName()) && SwingWorker.StateValue.DONE == evt.getNewValue()) 
+                    dialog.dispose();
+            }
+
+        }
 
 	/**
 	 * Create the application.
 	 */
 	public PredictHousePrice() {
-
+                SwingWorker worker = new SwingWorker() {
+                    @Override
+                    protected Object doInBackground() throws Exception {
+                        c = new Controller();
+                        return null;
+                    }
+                };
+                final JDialog dialog = new JDialog();
+                
+                worker.addPropertyChangeListener(new SwingerWorkerCompletionWaiter(dialog));
+                
+                final JOptionPane oPane = new JOptionPane("I am learning. Please wait.", JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);
+                dialog.setTitle("Hello Dave");
+                dialog.setModal(true);
+                dialog.setContentPane(oPane);
+                dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+                dialog.pack();
+                dialog.setLocationRelativeTo(null);
+                worker.execute();
+                dialog.setVisible(true);
+                
 		initialize();
 	}
 
@@ -121,9 +162,8 @@ public class PredictHousePrice {
 					frame.dispose();
 			}
 		};
-
-		Controller.main(null);
-		test = Controller.res;
+                
+		test = c.res;
 		ArrayList<String> city = new ArrayList<String>();
 		String prev = "";
 		city.add("All Cities");
@@ -156,7 +196,7 @@ public class PredictHousePrice {
 		scrollPane.addKeyListener(kL);
 		table.addKeyListener(kL);
 		comboBox.addKeyListener(kL);
-
+                frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
 }
