@@ -17,6 +17,40 @@ import javafx.beans.property.SimpleDoubleProperty;
  */
 public class ID3DecisionTree <D> {
     
+    private ID3DecisionNode<D> root;
+    private List<String> attributeNames;
+    
+    public ID3DecisionTree(List<String> attributeNames, List<List> attr, List<D> dep, boolean randomSubsetMode)
+    {
+        this.attributeNames = attributeNames;
+        
+        DecisionTreeMatrix dTI = new DecisionTreeMatrix(attributeNames, attr, dep);
+        
+        if(dTI.getValidColumns().isEmpty() || dTI.checkHomogenyCount() == 1 ) root = new ID3TerminalDecisionNode(dTI);
+        else root = new ID3DecisionNode(dTI, randomSubsetMode);
+    }
+    
+    public D getDecision(List<String> attributeNames, List<List> attr)
+    {
+        if(!this.attributeNames.containsAll(attributeNames)) 
+            try { throw new DecisionTreeMismatchedArgumentsException("Your decision query must contain the same column names as the original training data."); } 
+            catch (DecisionTreeMismatchedArgumentsException ex) { Logger.getLogger(ID3DecisionTree.class.getName()).log(Level.SEVERE, null, ex); }
+        
+        DecisionTreeMatrix dTI = new DecisionTreeMatrix(attributeNames, attr);
+        
+        return root.getDecision(dTI);
+    }
+    
+    public int getSize()
+    {
+        return 1 + root.getSize();
+    }
+    
+    public int getMaxDepth()
+    {
+        return root.getDepth();
+    }
+    
     public static void main(String[] args) {
         List<List> attributes = new ArrayList<>();
         List<String> labels = Arrays.asList("Hair", "Height", "Weight", "Lotion");
@@ -30,43 +64,8 @@ public class ID3DecisionTree <D> {
         attributes.add(Arrays.asList("brown", "average", "heavy", "no")); 
         attributes.add(Arrays.asList("blonde", "short", "light", "yes")); 
         
-        ID3DecisionTree<Integer> test = new ID3DecisionTree<>(labels, attributes, deps);
+        ID3DecisionTree<Integer> test = new ID3DecisionTree<>(labels, attributes, deps, false);
         
 //        System.out.println(test.getDepth());
-    }
-    
-    private ID3DecisionNode root;
-    private List<String> attributeNames;
-    
-    public ID3DecisionTree(List<String> attributeNames, List<List> attr, List<D> dep)
-    {
-        this.attributeNames = attributeNames;
-        
-        DecisionTreeMatrix dTI = new DecisionTreeMatrix(attributeNames, attr, dep);
-        
-        if(dTI.getValidColumns().isEmpty() || dTI.checkHomogenyCount() == 1 ) root = new ID3TerminalDecisionNode(dTI);
-        else root = new ID3DecisionNode(dTI);
-    }
-    
-    public List<D> getDecisions(List<String> attributeNames, List<List> attr)
-    {
-        if(!this.attributeNames.containsAll(attributeNames)) 
-            try { throw new DecisionTreeMismatchedArgumentsException("Your decision query must contain the same column names as the original training data."); } 
-            catch (DecisionTreeMismatchedArgumentsException ex) { Logger.getLogger(ID3DecisionTree.class.getName()).log(Level.SEVERE, null, ex); }
-        
-        DecisionTreeMatrix dTI = new DecisionTreeMatrix(attributeNames, attr);
-        if(root instanceof ID3TerminalDecisionNode) return new ArrayList<>(((ID3TerminalDecisionNode<D>)root).getDecisions());
-        
-        return root.getDecisions(dTI);
-    }
-    
-    public int getSize()
-    {
-        return 1 + root.getSize();
-    }
-    
-    public int getDepth()
-    {
-        return 1 + root.getDepth();
     }
 }

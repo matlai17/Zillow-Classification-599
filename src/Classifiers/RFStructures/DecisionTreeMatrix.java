@@ -68,7 +68,7 @@ public class DecisionTreeMatrix <D> {
             try { throw new DecisionTreeMismatchedArgumentsException("Your query can only contain a single sample."); } 
             catch (DecisionTreeMismatchedArgumentsException ex) { Logger.getLogger(DecisionTreeMatrix.class.getName()).log(Level.SEVERE, null, ex); }
         
-        this.dependentAttribute = null;
+        this.dependentAttribute = new ArrayList<>();
         this.attributeLabels = new ArrayList<>(attributeLabels);
         verticalAttributes = new ArrayList<>();
         this.validDataPoints = new HashSet<>();
@@ -110,8 +110,6 @@ public class DecisionTreeMatrix <D> {
         return verticalAttributes.remove(index); 
     }
     
-//    public void addAttributeColumn(List column) { verticalAttributes.add(column); }
-    
     public List getColumn(int index) { return verticalAttributes.get(index); }
     
     public String getColumnName(int index) { return attributeLabels.get(index); }
@@ -127,26 +125,6 @@ public class DecisionTreeMatrix <D> {
     public HashSet<Integer> getValidColumns() { return validColumns; }
     
     public HashSet<Integer> getValidDataPoints() { return validDataPoints; }
-    
-//    public int checkHomogenyCount(int branchIndex, Object condition)
-//    {
-//        HashSet depSet = new HashSet();
-//        for (Integer i = 0; i < getDataPointCount(); i++)
-//            if(verticalAttributes.get(branchIndex).get(i).equals(condition))
-//                depSet.add(getDependentAttribute(i));
-//        
-//        return depSet.size();
-//    }
-    
-//    public int checkHomogenyCount(List branchColumn, Object condition)
-//    {
-//        HashSet depSet = new HashSet();
-//        for (Integer i = 0; i < getDataPointCount(); i++)
-//            if(branchColumn.get(i).equals(condition)) 
-//                depSet.add(getDependentAttribute(i));
-//        
-//        return depSet.size();
-//    }
     
     public int checkHomogenyCount()
     {

@@ -12,203 +12,225 @@ import Resources.House;
  */
 class Category {
 
-	public int housesInCategory;
-	public TreeMap<String, Integer> featureFrequency;
+    public int housesInCategory;
+    public TreeMap<String, Integer> featureFrequency;
 
-	public Category() {
-		housesInCategory = 0;
-		featureFrequency = new TreeMap<>();
-	}
+    public Category() {
+        housesInCategory = 0;
+        featureFrequency = new TreeMap<>();
+    }
 }
 
 public class NaiveBayes extends Classifier {
 
-	private final String CLASSIFIER_NAME = "Naive Bayes";
-	private final int PRICE_DIVIDER_EXP = 3;
+    private final String CLASSIFIER_NAME = "Naive Bayes";
+    private final int PRICE_DIVIDER_EXP = 3;
 
-	// Frequency of each feature for the entire classifier
-	private TreeMap<String, Integer> featureFrequency;
+    // Frequency of each feature for the entire classifier
+    private TreeMap<String, Integer> featureFrequency;
 
 	// Data structure(s) containing different counts for each category
-	// - # of houses in each category
-	// - Frequency of each feature within the category
-	Category[] categories;
+    // - # of houses in each category
+    // - Frequency of each feature within the category
+    Category[] categories;
 
-	private int totalHouseCount;
+    private int totalHouseCount;
 
-	public NaiveBayes(int numberOfCategories) {
-		super(numberOfCategories);
-		initializeVariables();
-	}
+    public NaiveBayes(int numberOfCategories) {
+        super(numberOfCategories);
+        initializeVariables();
+    }
 
-	public NaiveBayes(double[] categories) {
-		super(categories);
-		initializeVariables();
-	}
+    public NaiveBayes(double[] categories) {
+        super(categories);
+        initializeVariables();
+    }
 
-	public NaiveBayes(List<House> houses, int numberOfCategories,
-			boolean evenDistribution) {
-		super(houses, numberOfCategories, evenDistribution);
-		initializeVariables();
-	}
+    public NaiveBayes(List<House> houses, int numberOfCategories,
+            boolean evenDistribution) {
+        super(houses, numberOfCategories, evenDistribution);
+        initializeVariables();
+    }
 
-	private void initializeVariables() {
-		featureFrequency = new TreeMap<>();
-		totalHouseCount = 0;
-		categories = new Category[numberOfCategories];
-		for (int i = 0; i < categories.length; i++)
-			categories[i] = new Category();
-	}
+    private void initializeVariables() {
+        featureFrequency = new TreeMap<>();
+        totalHouseCount = 0;
+        categories = new Category[numberOfCategories];
+        for (int i = 0; i < categories.length; i++) {
+            categories[i] = new Category();
+        }
+    }
 
 	// Train data. Each feature should be divided by successive numbers 10^N for
-	// N= 0 through n, where n is a selected number, and added into
-	// the training data. This will retrieve more data from large numbers
-	// because of their uniqueness.
-	@Override
-	public void train(List<House> houses) {
-		houses.stream().forEach(h -> train(h));
-	}
+    // N= 0 through n, where n is a selected number, and added into
+    // the training data. This will retrieve more data from large numbers
+    // because of their uniqueness.
+    @Override
+    public void train(List<House> houses) {
+        houses.stream().forEach(h -> train(h));
+    }
 
-	public void train(House h) {
-		totalHouseCount++;
+    public void train(House h) {
+        totalHouseCount++;
 
-		double[] houseArray = h.getFeaturesArray();
+        double[] houseArray = h.getFeaturesArray();
 
-		double truePrice = houseArray[houseArray.length - 1];
-		int houseCat = determineCategory(truePrice);
-		Category cat = categories[houseCat];
-		cat.housesInCategory++;
+        double truePrice = houseArray[houseArray.length - 1];
+        int houseCat = determineCategory(truePrice);
+        Category cat = categories[houseCat];
+        cat.housesInCategory++;
 
-		TreeMap<String, Double> houseMap = h.getFeatures();
-		java.util.Iterator<String> houseIt = houseMap.keySet().iterator();
+        TreeMap<String, Double> houseMap = h.getFeatures();
+        java.util.Iterator<String> houseIt = houseMap.keySet().iterator();
 
-		while (houseIt.hasNext()) {
-			int increment = 1;
-			String feature = houseIt.next();
-			String featureName = feature + "$" + houseMap.get(feature);
-			if ("area".equals(feature))
-				featureName = feature + "$"
-						+ Math.floor(houseMap.get(feature) / AREA_MODIFIER);
-			if ("age".equals(feature))
-				featureName = feature + "$"
-						+ Math.floor(houseMap.get(feature) / YEAR_MODIFIER);
+        while (houseIt.hasNext()) {
+            int increment = 1;
+            String feature = houseIt.next();
+            String featureName = feature + "$" + houseMap.get(feature);
+            if ("area".equals(feature)) {
+                featureName = feature + "$"
+                        + Math.floor(houseMap.get(feature) / AREA_MODIFIER);
+            }
+            if ("age".equals(feature)) {
+                featureName = feature + "$"
+                        + Math.floor(houseMap.get(feature) / YEAR_MODIFIER);
+            }
 
-			if ("zip".equals(feature))
-				increment = 1;
+            if ("zip".equals(feature)) {
+                increment = 1;
+            }
 
-			if (featureFrequency.containsKey(featureName))
-				featureFrequency.put(featureName,
-						featureFrequency.remove(featureName) + 1);
-			else
-				featureFrequency.put(featureName, increment);
+            if (featureFrequency.containsKey(featureName)) {
+                featureFrequency.put(featureName,
+                        featureFrequency.remove(featureName) + 1);
+            } else {
+                featureFrequency.put(featureName, increment);
+            }
 
-			if (cat.featureFrequency.containsKey(featureName))
-				cat.featureFrequency.put(featureName,
-						cat.featureFrequency.remove(featureName) + 1);
-			else
-				cat.featureFrequency.put(featureName, increment);
-		}
-	}
+            if (cat.featureFrequency.containsKey(featureName)) {
+                cat.featureFrequency.put(featureName,
+                        cat.featureFrequency.remove(featureName) + 1);
+            } else {
+                cat.featureFrequency.put(featureName, increment);
+            }
+        }
+    }
 
-	private final double AREA_MODIFIER = 100;
-	private final double YEAR_MODIFIER = 10;
+    private final double AREA_MODIFIER = 100;
+    private final double YEAR_MODIFIER = 10;
 
-	@Override
-	public double[] predict(House h) {
+    @Override
+    public double[] predict(House h) {
 
-		java.util.TreeMap<String, Double> featureMap = h.getFeatures();
+        java.util.TreeMap<String, Double> featureMap = h.getFeatures();
 
-		int mostLikelyCategory = -1;
-		double mostLikelyProbability = Integer.MIN_VALUE;
+        int mostLikelyCategory = -1;
+        double mostLikelyProbability = Integer.MIN_VALUE;
 
-		for (int i = 0; i < categories.length; i++) {
+        for (int i = 0; i < categories.length; i++) {
 
-			Category cat = categories[i];
+            Category cat = categories[i];
 
-			double probabilityOfHouseGivenCategory = 1, probabilityOfCategory = 1;// ,
-																					// PD
-																					// =
-																					// 1;
-			java.util.HashSet<String> cTerms = new java.util.HashSet<>();
-			java.util.Iterator<String> cT = cat.featureFrequency.keySet()
-					.iterator();
-			int totalFeatureCount = 0;
-			while (cT.hasNext()) {
-				String featureName = cT.next();
-				cTerms.add(featureName);
-				totalFeatureCount += cat.featureFrequency.get(featureName);
-			}
+            double probabilityOfHouseGivenCategory = 1, probabilityOfCategory = 1;// ,
+            // PD
+            // =
+            // 1;
+            java.util.HashSet<String> cTerms = new java.util.HashSet<>();
+            java.util.Iterator<String> cT = cat.featureFrequency.keySet()
+                    .iterator();
+            int totalFeatureCount = 0;
+            while (cT.hasNext()) {
+                String featureName = cT.next();
+                cTerms.add(featureName);
+                totalFeatureCount += cat.featureFrequency.get(featureName);
+            }
 
-			probabilityOfCategory = Math.log(((double) cat.housesInCategory)
-					/ ((double) totalHouseCount));
+            probabilityOfCategory = Math.log(((double) cat.housesInCategory)
+                    / ((double) totalHouseCount));
 
-			java.util.Iterator<String> houseIt = featureMap.keySet().iterator();
-			while (houseIt.hasNext()) {
-				String feature = houseIt.next();
+            java.util.Iterator<String> houseIt = featureMap.keySet().iterator();
+            while (houseIt.hasNext()) {
+                String feature = houseIt.next();
 
-				String featureName = feature + "$" + featureMap.get(feature);
-				if ("area".equals(feature))
-					featureName = feature + "$"
-							+ Math.floor(featureMap.get(feature) / 100);
-				if ("age".equals(feature))
-					featureName = feature + "$"
-							+ Math.floor(featureMap.get(feature) / 10);
+                String featureName = feature + "$" + featureMap.get(feature);
+                if ("area".equals(feature)) {
+                    featureName = feature + "$"
+                            + Math.floor(featureMap.get(feature) / 100);
+                }
+                if ("age".equals(feature)) {
+                    featureName = feature + "$"
+                            + Math.floor(featureMap.get(feature) / 10);
+                }
 
-				Integer cTF = cat.featureFrequency.get(featureName);
-				if (cTF == null)
-					cTF = 0;
+                Integer cTF = cat.featureFrequency.get(featureName);
+                if (cTF == null) {
+                    cTF = 0;
+                }
 
-				probabilityOfHouseGivenCategory += Math.log((cTF + 1.0)
-						/ (totalFeatureCount + featureMap.size()));// * IDF;
+                probabilityOfHouseGivenCategory += Math.log((cTF + 1.0)
+                        / (totalFeatureCount + featureMap.size()));// * IDF;
 
-			}
+            }
 
-			double PSRD = (probabilityOfHouseGivenCategory + probabilityOfCategory);
+            double PSRD = (probabilityOfHouseGivenCategory + probabilityOfCategory);
 
-			if (PSRD > mostLikelyProbability) {
-				mostLikelyCategory = i;
-				mostLikelyProbability = PSRD;
-			}
-		}
+            if (PSRD > mostLikelyProbability) {
+                mostLikelyCategory = i;
+                mostLikelyProbability = PSRD;
+            }
+        }
 
-		return determinePriceRange(mostLikelyCategory);
-	}
+        return determinePriceRange(mostLikelyCategory);
+    }
 
-	public void printCatDetails() {
+    public void printCatDetails() {
 
-		System.out.println("Overall Feature Frequency");
-		java.util.Iterator<String> fitIt = featureFrequency.keySet().iterator();
+        System.out.println("Overall Feature Frequency");
+        java.util.Iterator<String> fitIt = featureFrequency.keySet().iterator();
 
-		while (fitIt.hasNext()) {
-			String key = fitIt.next();
-			System.out.println(key + "\t" + featureFrequency.get(key));
-		}
+        while (fitIt.hasNext()) {
+            String key = fitIt.next();
+            System.out.println(key + "\t" + featureFrequency.get(key));
+        }
 
-		for (int i = 0; i < categories.length; i++) {
-			Category category = categories[i];
-			System.out
-					.println("\n-----------\nCategory: " + i + "\n----------");
+        for (int i = 0; i < categories.length; i++) {
+            Category category = categories[i];
+            System.out
+                    .println("\n-----------\nCategory: " + i + "\n----------");
 
-			java.util.Iterator<String> keys = category.featureFrequency
-					.keySet().iterator();
+            java.util.Iterator<String> keys = category.featureFrequency
+                    .keySet().iterator();
 
-			while (keys.hasNext()) {
-				String key = keys.next();
-				System.out.println(key + "\t"
-						+ category.featureFrequency.get(key));
-			}
-		}
-	}
+            while (keys.hasNext()) {
+                String key = keys.next();
+                System.out.println(key + "\t"
+                        + category.featureFrequency.get(key));
+            }
+        }
+    }
 
-	@Override
-	public String getClassifierName() {
-		return CLASSIFIER_NAME;
-	}
+    @Override
+    public String getClassifierName() {
+        return CLASSIFIER_NAME;
+    }
 
-	@Override
-	public double[] predict(String[] h) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public double[] predict(String[] h) {
+        return predict(new House(
+                0, //long ZillowID
+                null, //String Street
+                null, //String City
+                null, //String State
+                h[0], //String Zip
+                0, //double priceSold
+                Integer.parseInt(h[1]), //int bedrooms
+                Double.parseDouble(h[2]), //double bathrooms
+                Double.parseDouble(h[3]), //double area
+                Integer.parseInt(h[4]), //int year
+                0, //double zestimate
+                Integer.parseInt(h[5]), //int elem
+                Integer.parseInt(h[6]), //int mid
+                Integer.parseInt(h[7])));    //int high
+    }
 
 }

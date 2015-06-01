@@ -25,6 +25,7 @@ class ID3DecisionNode <D> {
     
     protected HashMap<Object, ID3DecisionNode<D>> children;
     protected String attribute;
+    protected boolean randomSubset;
 //    protected final ID3DecisionTree parentTree;
     
 
@@ -35,20 +36,23 @@ class ID3DecisionNode <D> {
     {
         attribute = null;
         children = new HashMap<>();
+        randomSubset = false;
     }
     
-    ID3DecisionNode(DecisionTreeMatrix dTM)
+    ID3DecisionNode(DecisionTreeMatrix dTM, boolean randomSubset)
     {
         attribute = null;
         children = new HashMap<>();
+        this.randomSubset = randomSubset;
         
         createTree(dTM);
     }
     
-    private ID3DecisionNode(String attr, DecisionTreeMatrix dTM)
+    private ID3DecisionNode(String attr, DecisionTreeMatrix dTM, boolean randomSubset)
     {
         attribute = attr;
         children = new HashMap<>();
+        this.randomSubset = randomSubset;
         
         createTree(dTM);
     }
@@ -63,13 +67,22 @@ class ID3DecisionNode <D> {
         java.util.Set<Object> branchSet = new HashSet<>();
         int Nt = dTM.getValidDataPoints().size();
         HashMap<Object, HashSet<Integer>> listOfValidDataPoints = new HashMap<>();
+        
+        List<Integer> columnList = new ArrayList<>(dTM.getValidColumns());
+        if(randomSubset)
+        {
+            int listSize = columnList.size();
+            java.util.Random r = new java.util.Random();
+            while(columnList.size() > Math.floor(Math.sqrt(listSize)))
+                columnList.remove(r.nextInt(columnList.size()));
+        }
+        
         for (int i = 0; i < dTM.columnCount(); i++) {
-            if(dTM.getValidColumns().contains(i))
+            if(columnList.contains(i))
             {
                 List column = dTM.getColumn(i);
                 // Get Average entropy levels for each column that is valid (has not yet been made a branch)
                 SimpleDoubleProperty entropy = new SimpleDoubleProperty(0);
-//                int Nt = dTM.getDataPointCount();
 
                 HashMap<Object, Integer> branchCounter = new HashMap<>();
                 for(int j = 0; j < column.size(); j++) {
@@ -103,7 +116,7 @@ class ID3DecisionNode <D> {
                     entropy.set(entropy.get() + (value * branchEntropy.get()));
                     listOfValidDataPoints.put(k, validDataPoints);
                 });
-//                System.out.println(dTM.getColumnName(i)+ "\tEntropy: " + entropy.getValue());
+                
                 if(entropy.getValue() < minEntropy)
                 {
                     minEntropy = entropy.getValue();
@@ -118,37 +131,63 @@ class ID3DecisionNode <D> {
         List attributeColumn = dTM.getColumn(minIndex);
         final int minIndexF = minIndex;
         branchSet.forEach(branch -> {
-            System.out.println(attribute + " -> " + branch);
+//            System.out.println(attribute + " -> " + branch);
             DecisionTreeMatrix<D> newDTM = new DecisionTreeMatrix<>(dTM, minIndexF, listOfValidDataPoints.get(branch));
-//            System.out.println("Branch " + branch.toString() + " Size: " + listOfValidDataPoints.get(branch).size());
-//            System.out.println("Branch " + branch.toString());
-//            System.out.println(newDTM.toString());
+            
         // Check for end cases for each potential child (with value of the selected minimum entropy attribute)
         // (No more attributes        ||        All children have same dependent value)
             // If endcase, then create TerminalDecisionNode with Decision Object assigned. Add to children list with child value.
             
-            if(!newDTM.getValidDataPoints().isEmpty())
-                if(newDTM.getValidColumns().isEmpty() || newDTM.checkHomogenyCount() == 1)
-                {
-//                    System.out.println("TERMINATE\t" + dTM.columnCount() + "\t" + dTM.checkHomogenyCount());
-                    List<D> decisions = new ArrayList<>();
-                    for (int i = 0; i < attributeColumn.size(); i++) 
-                        if(attributeColumn.get(i).equals(branch)) decisions.add((D)dTM.getDependents().get(i));
-                    children.put(branch, new ID3TerminalDecisionNode<>(decisions));
-                }
+            if(newDTM.getValidColumns().isEmpty() || newDTM.checkHomogenyCount() == 1 || newDTM.getValidColumns().isEmpty())
+            {
+                HashMap<D, Integer> decisionCount = new HashMap<>();
+                for (int i = 0; i < attributeColumn.size(); i++) 
+                    if(attributeColumn.get(i).equals(branch) && dTM.getValidDataPoints().contains(i))
+//                            decisions.add((D)dTM.getDependents().get(i));
+                    {
+                        if(!decisionCount.containsKey((D)dTM.getDependents().get(i))) decisionCount.put((D)dTM.getDependents().get(i), 1);
+                        else decisionCount.put((D)dTM.getDependents().get(i), decisionCount.remove((D)dTM.getDependents().get(i))+1);
+                    }
 
-                // Otherwise, create new child
-                else
-                {
-//                    System.out.println("BRANCH to " + branch.toString() + "\t" + dTM.getValidColumns().size() + "\t" + dTM.checkHomogenyCount());
-                    children.put(branch, new ID3DecisionNode<>(newDTM));
-                }
+                List<D> decisions = new ArrayList<>();
+                int maxCount = Collections.max(decisionCount.values());
+                decisionCount.keySet().forEach(k -> { if(decisionCount.get(k) == maxCount) decisions.add(k); });
+                java.util.Random r = new java.util.Random();
+
+                D decision = decisions.get(r.nextInt(decisions.size()));
+                children.put(branch, new ID3TerminalDecisionNode<>(decision));
+            }
+
+            // Otherwise, create new child
+            else
+                children.put(branch, new ID3DecisionNode<>(newDTM, randomSubset));
         });
     }
     
-    public List<D> getDecisions(DecisionTreeMatrix dTM)
+    // TODO if have time
+    // Implement Decision break voting.
+    // This will allow for prediction of houses with incomplete information.
+    public D getDecision(DecisionTreeMatrix dTM)
     {
-        return children.get(dTM.getColumn(dTM.getColumnNames().indexOf(attribute)).get(0)).getDecisions(dTM);
+        ID3DecisionNode<D> child = children.get(dTM.getColumn(dTM.getColumnNames().indexOf(attribute)).get(0));
+        if(child == null)
+        {
+            HashMap<D, Integer> decisions = new HashMap<>();
+            children.keySet().forEach(key -> {
+                D decision = children.get(key).getDecision(dTM);
+                if(!decisions.containsKey(decision)) decisions.put(decision, 1);
+                else decisions.put(decision, decisions.remove(decision) + 1);
+            });
+            int max = Collections.max(decisions.values());
+            List<D> listOfMaxDecisions = new ArrayList<>();
+            decisions.keySet().forEach(key -> { 
+                if(decisions.get(key) == max) listOfMaxDecisions.add(key);
+            });
+//            java.util.Random r = new Random();
+            return listOfMaxDecisions.get((new java.util.Random()).nextInt(listOfMaxDecisions.size()));
+            
+        }
+        return child.getDecision(dTM);
     }
     
     int getDepth() {
