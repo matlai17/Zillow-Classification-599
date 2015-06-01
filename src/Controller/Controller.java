@@ -65,7 +65,7 @@ public class Controller {
         if (singleHouse) {
             categories = Classifier.generatePriceRanges(allHouses, 125, true);
         } else {
-            categories = Classifier.generatePriceRanges(allHouses, 10000, false);
+            categories = Classifier.generatePriceRanges(allHouses, 100, false);
         }
 		// Dynamic category sizes increases accuracy with fewer number of
         // categories when using Naive-Bayes. My guess is that the outlier
@@ -99,6 +99,9 @@ public class Controller {
         double averageCatDifference_RF = 0;
         int numberTrue_RF = 0;
         int maxDistance_RF = 0;
+        double averageCatDifference_zi = 0;
+        int numberTrue_zi = 0;
+        int maxDistance_zi = 0;
         res = new ArrayList<>();
 
         if (singleHouse) {
@@ -115,6 +118,7 @@ public class Controller {
                 int determinedCat_NB = NB.determineCategory(logs(NBPred));
                 int determinedCat_ANN = ANN.determineCategory(logs(ANNPred));
                 int determinedCat_RF = RF.determineCategory(logs(RFPred));
+                int determinedCat_zi = RF.determineCategory(h.getZestimate());
 //                
                 System.out.println("Average of Predicted ANN Price Range :" + logs(ANNPred) + "\t");
                 System.out.println("Average of Predicted NB Price Range :" + logs(NBPred) + "\t");
@@ -164,6 +168,14 @@ public class Controller {
                 if (determinedCat_NB == trueCat) {
                     numberTrue_NB++;
                 }
+                
+                averageCatDifference_zi += Math.abs(determinedCat_zi - trueCat);
+                if (Math.abs(determinedCat_zi - trueCat) > maxDistance_zi) {
+                    maxDistance_zi = Math.abs(determinedCat_zi - trueCat);
+                }
+                if (determinedCat_zi == trueCat) {
+                    numberTrue_zi++;
+                }
 
             }
 
@@ -192,6 +204,14 @@ public class Controller {
                     + testHouses.size() + " = " + (double) numberTrue_RF
                     / (double) testHouses.size());
             System.out.println("Maximum Difference in Category: " + maxDistance_RF);
+            
+            System.out.println("\n==================================\n\t       Zillow\n==================================");
+            System.out.println("Average Difference in Category: "
+                    + averageCatDifference_zi / testHouses.size());
+            System.out.println("Absolute Correctness: " + numberTrue_zi + "/"
+                    + testHouses.size() + " = " + (double) numberTrue_zi
+                    / (double) testHouses.size());
+            System.out.println("Maximum Difference in Category: " + maxDistance_zi);
         }
 
     }
@@ -216,7 +236,7 @@ public class Controller {
         testHouses = new ArrayList<>();
 
         int numTestHouses = allHouses.size() / 10;
-        Random r = new Random(0); // Random r = new Random(13);
+        Random r = new Random(); // Random r = new Random(13);
         java.util.HashSet<Integer> bag = new java.util.HashSet<>();
 
         while (bag.size() < numTestHouses) {
