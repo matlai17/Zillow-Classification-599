@@ -234,38 +234,3 @@ public abstract class Classifier {
 		return categories;
 	}
 }
-
-// public static int determineCategory(double[] categories, double price)
-// {
-// if(price > categories[categories.length - 1]) return categories.length - 1;
-// int imin = 0, imax = categories.length - 1;
-// while(imax - imin != 1)
-// {
-// // floored
-// int imid = (imax+imin)/2;
-// if(price == categories[imid]) return imid;
-// if(price > categories[imid]) imin = imid;
-// if(price < categories[imid]) imax = imid;
-// }
-// return imin;
-// }
-//
-// public static void main(String[] args) {
-// List<House> test = new ArrayList<>();
-// Random r = new Random();
-// for(int i = 0; i < 100; i++)
-// {
-// House h = new House();
-// // h.setSoldPrice((r.nextGaussian()+2)*r.nextInt(1000));
-// h.setSoldPrice(i);
-// test.add(h);
-// }
-// double []output = generatePriceRanges(test, 18, true);
-// // for(double o : output) System.out.println(o);
-// for (int i = 0; i < output.length; i++) {
-// System.out.println(i + " - " + output[i]);
-// }
-// double testNum = 33;
-// System.out.println("\n-----------\n" + determineCategory(output, testNum) +
-// " - " + testNum);
-// }
