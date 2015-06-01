@@ -110,7 +110,7 @@ public class PredictHousePrice {
 		String[] columnNames = { "Address", "City", "Bedroom", "Bathroom",
 				"Price/Sqft", "Elementary", "Middle", "High School",
 				"Year Built", "Area", "Price sold", "Zestimate",
-				"ANN Prediction", "NB Prediction" };
+				"ANN Prediction", "NB Prediction","RF Prediction" };
 
 		ArrayList<String[]> filteredData = new ArrayList<String[]>();
 

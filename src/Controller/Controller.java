@@ -139,8 +139,9 @@ public class Controller {
                     String.valueOf(h.getArea()),
                     String.valueOf(h.getPriceSold()),
                     String.valueOf(h.getZestimate()),
-                    String.valueOf(logs(ANN.predict(h))),
-                    String.valueOf(logs(NB.predict(h)))});
+                    String.valueOf(logs(ANNPred)),
+                    String.valueOf(logs(NBPred)),
+                    String.valueOf(logs(RFPred)),});
 //                cnt++;
 //
                  int trueCat = ANN.determineCategory(h.getPriceSold());
