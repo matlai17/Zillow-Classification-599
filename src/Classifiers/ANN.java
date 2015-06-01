@@ -15,8 +15,8 @@ public class ANN extends Classifier {
 	private final String CLASSIFIER_NAME = "Artificial Neural Network";
 	public double kernelProportion = .1;
 	public double varianceMaxDistanceProportion = 1;
-	public double learningRate = .1;
-	public int nIterations = 1;
+	public double learningRate = .2;
+	public int nIterations = 200;
 	public double variance = 0;
 	public double[][] kernelSet;
 	public double[][] weights;
