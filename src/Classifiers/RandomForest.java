@@ -57,7 +57,8 @@ public class RandomForest extends Classifier {
 
     @Override
     public double[] predict(House h) {
-        Map<Integer, Integer> syncedCatCount = Collections.synchronizedMap(new HashMap<Integer, Integer>());
+        Map<Integer, Integer> syncedCatCount = new HashMap<>();
+//        Map<Integer, Integer> syncedCatCount = Collections.synchronizedMap(new HashMap<Integer, Integer>());
         List<String> featureNames = new ArrayList<>();
         List<List> featuresList = new ArrayList<>();
         List features = new ArrayList();
@@ -70,16 +71,10 @@ public class RandomForest extends Classifier {
         featuresList.add(features);
         
 //        forest.stream().forEach(tree -> {
-        int nullCount = 0;
         for(int i = 0; i < forest.size(); i++)
         {
             ID3DecisionTree<Integer> tree = forest.get(i);
             Integer category = tree.getDecision(featureNames, featuresList);
-            if(category == null)
-            {
-                nullCount++;
-                continue;
-            }
             if(!syncedCatCount.containsKey(category)) syncedCatCount.put(category, 1);
             else syncedCatCount.put(category, syncedCatCount.remove(category) + 1);
 //        });
