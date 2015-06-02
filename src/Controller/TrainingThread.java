@@ -32,8 +32,9 @@ public class TrainingThread implements Runnable {
     
     @Override
     public void run() {
+        Long startTime = System.currentTimeMillis();
         c.train(houses);
-        System.out.println(c.getClassifierName() + " Finished Training");
+        System.out.println(c.getClassifierName() + " Finished Training - RunTime: " + (System.currentTimeMillis() - startTime));
     }
     
 }

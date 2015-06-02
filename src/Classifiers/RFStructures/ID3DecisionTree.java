@@ -17,8 +17,8 @@ import javafx.beans.property.SimpleDoubleProperty;
  */
 public class ID3DecisionTree <D> {
     
-    private ID3DecisionNode<D> root;
-    private List<String> attributeNames;
+    private final ID3DecisionNode<D> root;
+    private final List<String> attributeNames;
     
     public ID3DecisionTree(List<String> attributeNames, List<List> attr, List<D> dep, boolean randomSubsetMode)
     {

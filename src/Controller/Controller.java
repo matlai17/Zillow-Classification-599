@@ -144,7 +144,7 @@ public class Controller {
                     String.valueOf(logs(RFPred)),});
 //                cnt++;
 //
-                 int trueCat = ANN.determineCategory(h.getPriceSold());
+                 int trueCat = NB.determineCategory(h.getPriceSold());
 //
                 averageCatDifference_ANN += Math.abs(determinedCat_ANN - trueCat);
                 if (Math.abs(determinedCat_ANN - trueCat) > maxDistance_ANN) {

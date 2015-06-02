@@ -26,6 +26,7 @@ public class RandomForest extends Classifier {
     private final int B;
     private final int N;
     private List<ID3DecisionTree<Integer>> forest;
+    
     public RandomForest(double[] categories, int B, int N) {
         super(categories);
         this.B = B;
