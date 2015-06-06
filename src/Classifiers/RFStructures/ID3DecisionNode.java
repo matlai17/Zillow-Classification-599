@@ -57,17 +57,24 @@ class ID3DecisionNode <D> {
         createTree(dTM);
     }
     
-    // Recursive Call
+    /**
+     * Recursive Call to construct the tree. Uses the attribute table which contains
+     * the data set that is used to train the tree.
+     * 
+     * @param dTM the DecisionTreeMatrix containing the attribute table
+     */
     private void createTree(DecisionTreeMatrix dTM) {
 //        System.out.println("New Instance");
         // Perform entropy checks to determine what attribute the children should be looking for.
         int minIndex = -1;
         double minEntropy = Double.MAX_VALUE;
+        // dependents is the set of dependent values or decisions for each data point
         HashSet<D> dependents = new HashSet<>(dTM.getDependents());
         java.util.Set<Object> branchSet = new HashSet<>();
         int Nt = dTM.getValidDataPoints().size();
         HashMap<Object, HashSet<Integer>> listOfValidDataPoints = new HashMap<>();
         
+        // Selects a random subset of the available set of attributes. i.e. the feature bagging
         List<Integer> columnList = new ArrayList<>(dTM.getValidColumns());
         if(randomSubset)
         {
@@ -77,6 +84,7 @@ class ID3DecisionNode <D> {
                 columnList.remove(r.nextInt(columnList.size()));
         }
         
+        // Goes through each of the valid selected columns and calculates the average entropy for each attribute
         for (int i = 0; i < dTM.columnCount(); i++) {
             if(columnList.contains(i))
             {
@@ -84,6 +92,7 @@ class ID3DecisionNode <D> {
                 // Get Average entropy levels for each column that is valid (has not yet been made a branch)
                 SimpleDoubleProperty entropy = new SimpleDoubleProperty(0);
 
+                // Performs a count of the different values for the current attribute.
                 HashMap<Object, Integer> branchCounter = new HashMap<>();
                 for(int j = 0; j < column.size(); j++) {
                     if(dTM.getValidDataPoints().contains(j))
@@ -94,12 +103,15 @@ class ID3DecisionNode <D> {
                     }
                 }
                 
+                // goes through the set of values (each one representing a branch) for the current attribute. 
                 java.util.Set<Object> bSet = branchCounter.keySet();
                 bSet.forEach(k -> {
                     HashSet<Integer> validDataPoints = new HashSet<>();
                     SimpleDoubleProperty branchEntropy = new SimpleDoubleProperty(0);
                     int Nb = branchCounter.get(k);
 
+                    //remembers the valid data points for the current column, allowing it to determine which
+                    // data points are bucketed into which branch
                     dependents.forEach(d -> {
                         int Nbc = 0;
                         for (int j = 0; j < column.size(); j++)
@@ -117,6 +129,7 @@ class ID3DecisionNode <D> {
                     listOfValidDataPoints.put(k, validDataPoints);
                 });
                 
+                // Finds minimum entropy
                 if(entropy.getValue() < minEntropy)
                 {
                     minEntropy = entropy.getValue();
@@ -164,9 +177,15 @@ class ID3DecisionNode <D> {
         });
     }
     
-    // TODO if have time
-    // Implement Decision break voting.
-    // This will allow for prediction of houses with incomplete information.
+    /**
+     * Queries the tree for a decision. Each node does its part by returning the correct
+     * branch for the given object contained in the dTM. If there are no branches
+     * corresponding to the object's attribute, then the decisions of all the children
+     * nodes are returned and the mode of the total decisions is returned as the decision
+     * 
+     * @param dTM the DecisionTreeMatrix containing the attribute values of one object
+     * @return the <D> decision
+     */
     public D getDecision(DecisionTreeMatrix dTM)
     {
         ID3DecisionNode<D> child = children.get(dTM.getColumn(dTM.getColumnNames().indexOf(attribute)).get(0));

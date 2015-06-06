@@ -37,6 +37,22 @@ public class Controller {
     private NaiveBayes NB;
     private RandomForest RF;
     
+    public double avgCatDist_ANN;
+    public double accuracy_ANN; 
+    public double maxDist_ANN;
+    public double avgCatDist_NB;
+    public double accuracy_NB; 
+    public double maxDist_NB;
+    public double avgCatDist_RF;
+    public double accuracy_RF; 
+    public double maxDist_RF;
+    public double avgCatDist_Zest;
+    public double accuracy_Zest; 
+    public double maxDist_Zest;
+    
+    private int multiHouseCatNumber;
+    private boolean multiHouseDynamic;
+    
     private final String zillowDataFile = "data\\ZillowDataTrain.csv";
     
 
@@ -48,6 +64,16 @@ public class Controller {
      *
      */
     public Controller(){
+        multiHouseDynamic = false;
+        multiHouseCatNumber = 125;
+        singleHouse = false;
+        initialize();
+    }
+    
+    public Controller(int mHCN, boolean mHD)
+    {
+        multiHouseDynamic = mHD;
+        multiHouseCatNumber = mHCN;
         singleHouse = false;
         initialize();
     }
@@ -65,7 +91,7 @@ public class Controller {
         if (singleHouse) {
             categories = Classifier.generatePriceRanges(allHouses, 125, true);
         } else {
-            categories = Classifier.generatePriceRanges(allHouses, 100, false);
+            categories = Classifier.generatePriceRanges(allHouses, multiHouseCatNumber, multiHouseDynamic);
         }
 		// Dynamic category sizes increases accuracy with fewer number of
         // categories when using Naive-Bayes. My guess is that the outlier
@@ -179,16 +205,20 @@ public class Controller {
                 }
 
             }
+            avgCatDist_ANN = averageCatDifference_ANN / testHouses.size();
+            accuracy_ANN = ((double)numberTrue_ANN/(double) testHouses.size()); 
+            maxDist_ANN = maxDistance_ANN;
 
             // Below Analysis is for ANN we can do similar for other classifier
             System.out.println("\n\n==================================\n       Average Performance\n==================================");
             System.out.println("\n==================================\n\t         ANN\n==================================");
-            System.out.println("Average Difference in Category: "
-                    + averageCatDifference_ANN / testHouses.size());
-            System.out.println("Absolute Correctness: " + numberTrue_ANN + "/"
-                    + testHouses.size() + " = " + (double) numberTrue_ANN
-                    / (double) testHouses.size());
+            System.out.println("Average Difference in Category: " + averageCatDifference_ANN / testHouses.size());
+            System.out.println("Absolute Correctness: " + numberTrue_ANN + "/" + testHouses.size() + " = " + ((double)numberTrue_ANN/(double) testHouses.size()));
             System.out.println("Maximum Difference in Category: " + maxDistance_ANN);
+            
+            avgCatDist_NB = averageCatDifference_NB / testHouses.size();
+            accuracy_NB = ((double)numberTrue_NB/(double) testHouses.size()); 
+            maxDist_NB = maxDistance_NB;
             
             System.out.println("\n==================================\n\t         NB\n==================================");
             System.out.println("Average Difference in Category: "
@@ -198,6 +228,10 @@ public class Controller {
                     / (double) testHouses.size());
             System.out.println("Maximum Difference in Category: " + maxDistance_NB);
             
+            avgCatDist_RF = averageCatDifference_RF / testHouses.size();
+            accuracy_RF = ((double)numberTrue_RF/(double) testHouses.size()); 
+            maxDist_RF = maxDistance_RF;
+            
             System.out.println("\n==================================\n\t         RF\n==================================");
             System.out.println("Average Difference in Category: "
                     + averageCatDifference_RF / testHouses.size());
@@ -205,6 +239,10 @@ public class Controller {
                     + testHouses.size() + " = " + (double) numberTrue_RF
                     / (double) testHouses.size());
             System.out.println("Maximum Difference in Category: " + maxDistance_RF);
+            
+            avgCatDist_Zest = averageCatDifference_zi / testHouses.size();
+            accuracy_Zest = ((double)numberTrue_zi/(double) testHouses.size()); 
+            maxDist_Zest = maxDistance_zi;
             
             System.out.println("\n==================================\n\t       Zillow\n==================================");
             System.out.println("Average Difference in Category: "
@@ -232,6 +270,12 @@ public class Controller {
         return avg;
     }
 
+    /**
+     * PartitionHouses partitions the given set of houses into a training set
+     * and a testing set. 
+     * 
+     * @param allHouses 
+     */
     public final void partitionHouses(List<House> allHouses) {
         trainingHouses = new ArrayList<>();
         testHouses = new ArrayList<>();
@@ -252,9 +296,94 @@ public class Controller {
             }
         }
     }
+    
+    void runController()
+    {
+        int cat = 125;
+        boolean dyn = true;
+        double avgCatTotal_ANN = 0;
+        double avgCatTotal_NB = 0;
+        double avgCatTotal_RF = 0;
+        double avgCatTotal_Zest = 0;
+        
+        double avgAccuracyTotal_ANN = 0;
+        double avgAccuracyTotal_NB = 0;
+        double avgAccuracyTotal_RF = 0;
+        double avgAccuracyTotal_Zest = 0;
+        
+        double maxDistTotal_ANN = 0;
+        double maxDistTotal_NB = 0;
+        double maxDistTotal_RF = 0;
+        double maxDistTotal_Zest = 0;
+        for(int i = 0; i < 5; i++)
+        {
+            Controller c = new Controller(cat, dyn);
+            
+            avgCatTotal_ANN += c.avgCatDist_ANN;
+            avgAccuracyTotal_ANN += c.accuracy_ANN;
+            maxDistTotal_ANN += c.maxDist_ANN;
+            
+            avgCatTotal_NB += (c.avgCatDist_NB);
+            avgAccuracyTotal_NB +=(c.accuracy_NB);
+            maxDistTotal_NB +=(c.maxDist_NB);
+            
+            avgCatTotal_RF += (c.avgCatDist_RF);
+            avgAccuracyTotal_RF += (c.accuracy_RF);
+            maxDistTotal_RF += (c.maxDist_RF);
+            
+            avgCatTotal_Zest += (c.avgCatDist_Zest);
+            avgAccuracyTotal_Zest += (c.accuracy_Zest);
+            maxDistTotal_Zest += (c.maxDist_Zest);
+        }
+        
+        System.out.println("\nTotals for " + cat + " categories -  Dynamic Setting: " + dyn + ": \n\n");
+        
+        System.out.println("Artificial Neural Network");
+        System.out.println("Average difference in Category: " + avgCatTotal_ANN/5.0);
+        System.out.println("Average Accuracy: " + avgAccuracyTotal_ANN/5.0);
+        System.out.println(maxDistTotal_ANN/5.0);
+        
+        System.out.println("Naive Bayes");
+        System.out.println("Average difference in Category: " + avgCatTotal_NB/5.0);
+        System.out.println("Average Accuracy: " + avgAccuracyTotal_NB/5.0);
+        System.out.println(maxDistTotal_NB/5.0);
+        
+        System.out.println("Random Forest - Average difference in Category: " + avgCatTotal_RF/5.0);
+        System.out.println(avgAccuracyTotal_RF/5.0);
+        System.out.println(maxDistTotal_RF/5.0);
+        
+        System.out.println("Zestimate - Average difference in Category: " + avgCatTotal_Zest/5.0);
+        System.out.println(avgAccuracyTotal_Zest/5.0);
+        System.out.println(maxDistTotal_Zest/5.0);
+        
+    }
 
     public static void main(String[] args) {
-        new Controller();
+        
+        if(args.length > 0)
+            switch(args[0])
+            {
+                case "1":
+                    break;
+                case "2":
+                    UI.PredictHousePrice.main(new String[0]);
+                    System.exit(0);
+                    break;
+                case "3":
+                    UI.DreamHouse.main(new String[0]);
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("Format: 'java -jar ZillowClassifier.jar [d]'\n\n"
+                            + "[d] - a digit representing your output choice:\n"
+                            + "    1 - Text output. Generates an average result for each algorithm. \n"
+                            + "    2 - Predict House Price UI. Displays testing houses and predictions.\n"
+                            + "    3 - Dream House UI. Construct arbitrary house to generate predictions.\n");
+                    System.exit(1);
+                    break;
+            }
+        
+//        new Controller();
     }
 
 }

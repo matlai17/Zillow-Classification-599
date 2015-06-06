@@ -1,19 +1,4 @@
-/*
- * Copyright (C) 2015 Matthew Lai
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+
 package Classifiers.RFStructures;
 
 import Resources.DecisionTreeMismatchedArgumentsException;
@@ -24,7 +9,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * The DecisionTreeMatrix contains the attribute information needed to construct a 
+ * decision tree. The information is passed to the decision tree which will orient
+ * the data in such a way as to make constructing a decision tree easier. It stores
+ * the data column-wise as there requires a lot of column calculations. It also allows
+ * for the decision tree generation algorithm to designate the valid rows and columns for
+ * each next branch to perform its operations on.
+ * 
  * @author Matthew Lai
  */
 public class DecisionTreeMatrix <D> {

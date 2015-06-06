@@ -1,5 +1,10 @@
 package Resources;
 
+/**
+ * HouseAddress object to represent the address of a House Object
+ * 
+ * @author Matthew Lai and Arun Singh
+ */
 public class HouseAddress {
 
 	private String streetAddress;

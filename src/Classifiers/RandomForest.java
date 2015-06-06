@@ -27,6 +27,13 @@ public class RandomForest extends Classifier {
     private final int N;
     private List<ID3DecisionTree<Integer>> forest;
     
+    /**
+     * Constructor
+     * 
+     * @param categories
+     * @param B The number of trees in the forest
+     * @param N The number of trees per bag
+     */
     public RandomForest(double[] categories, int B, int N) {
         super(categories);
         this.B = B;
@@ -34,6 +41,13 @@ public class RandomForest extends Classifier {
         this.forest = new ArrayList<>();
     }
 
+    /**
+     * Training method. Constructs lists and passes lists to trees. Each tree
+     * is trained independently in separate threads with up to the maximum number
+     * of threads allowed by the hardware.
+     * 
+     * @param houses the full set of training houses.
+     */
     @Override
     public void train(List<House> houses) {
         ExecutorService exec = Executors.newWorkStealingPool();
@@ -95,6 +109,12 @@ public class RandomForest extends Classifier {
         return CLASSIFIER_NAME;
     }
 
+    /**
+     * Extra function to allow compatability with "DreamHouse" UI
+     * 
+     * @param h
+     * @return 
+     */
     @Override
     public double[] predict(String[] h) {
         // h -> zip,bed,bath,area,year,elem,mid,high, 0.0

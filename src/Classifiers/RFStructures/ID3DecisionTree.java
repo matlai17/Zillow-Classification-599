@@ -11,9 +11,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.SimpleDoubleProperty;
 /**
- *
- * @author Matthew Lai and Arun Singh
- * @param <D>
+ * ID3 implementation for decision tree generation. Performs checks to ensure a valid
+ * tree and decision can be made before performing training and predicting respectively.
+ * Creates a root node to begin the process of constructing the tree.
+ * 
+ * @author Matthew Lai 
+ * @param <D> The decision type
  */
 public class ID3DecisionTree <D> {
     
@@ -30,6 +33,14 @@ public class ID3DecisionTree <D> {
         else root = new ID3DecisionNode(dTI, randomSubsetMode);
     }
     
+    /**
+     * Queries the tree for a decision based on the list of attribute names and their corresponding
+     * attributes. These attributes should match the ones used to construct the tree.
+     * 
+     * @param attributeNames
+     * @param attr
+     * @return 
+     */
     public D getDecision(List<String> attributeNames, List<List> attr)
     {
         if(!this.attributeNames.containsAll(attributeNames)) 
@@ -41,11 +52,21 @@ public class ID3DecisionTree <D> {
         return root.getDecision(dTI);
     }
     
+    /**
+     * Calculates the number of nodes in the tree.
+     * 
+     * @return the number of nodes in the tree
+     */
     public int getSize()
     {
         return 1 + root.getSize();
     }
     
+    /**
+     * Calculates the maximum depth of the tree.
+     * 
+     * @return the number of nodes to reach the deepest branch.
+     */
     public int getMaxDepth()
     {
         return root.getDepth();

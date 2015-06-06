@@ -2,8 +2,10 @@
 package Classifiers.RFStructures;
 
 /**
- *
- * @author Matthew Lai and Arun Singh
+ * The terminal node containing the final decision. This decision will be returned when
+ * a decision is requested and the object branches to this node.
+ * 
+ * @author Matthew Lai
  * 
  * @param <D>
  */

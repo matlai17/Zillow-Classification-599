@@ -23,7 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 /**
- *
+ * Callable implementation to allow tree training to be parallelized.
+ * 
  * @author Matthew Lai
  */
 public class RandomForestTrainer implements Callable<ID3DecisionTree> {

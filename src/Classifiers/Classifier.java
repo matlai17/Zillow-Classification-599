@@ -9,7 +9,9 @@ import Resources.House;
 import Resources.HouseCategoryMismatchException;
 
 /**
- *
+ * Classifier abstract class. Contains abstract methods that must be implemented
+ * in order to be used in controller. Also contains utility code.
+ * 
  * @author Matthew Lai and Arun Singh
  */
 public abstract class Classifier {
